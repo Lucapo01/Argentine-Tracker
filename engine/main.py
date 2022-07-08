@@ -32,7 +32,7 @@ def load_parameters() -> list:
 
 def main() -> None:
     funds_list: list = load_parameters()
-    funds_scrapper = FundsScrapper(funds_list, 3)
+    funds_scrapper = FundsScrapper(funds_list, 6)
     funds_scrapper.run()
 
 

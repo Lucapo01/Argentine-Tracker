@@ -21,16 +21,28 @@ class FundsScrapper:
     def get_data(self, name: str, url: str):
         self.driver.get(url)
         sleep(self.speed)
-        self.driver.find_element(By.CLASS_NAME,"html").click()
-        sleep(self.speed)
-        self.driver.switch_to.window(self.driver.window_handles[1])
-        sleep(self.speed)
+        error: bool = False
+        while not error:
+            try:
+                self.driver.find_element(By.CLASS_NAME,"html").click()
+                sleep(self.speed)
+                self.driver.switch_to.window(self.driver.window_handles[1])
+                sleep(self.speed)
 
-        html = self.driver.execute_script(
-            "return document.documentElement.outerHTML")
-        sel_soup = BeautifulSoup(html, "html.parser")
-
-        datos_crudos = sel_soup.findAll("tr")
-        datos_crudos = str(datos_crudos)
-        with open('datos_crudos.txt', 'w') as f:
-            f.write(datos_crudos)
+                html = self.driver.execute_script(
+                    "return document.documentElement.outerHTML")
+                sel_soup = BeautifulSoup(html, "html.parser")
+                data_raw = sel_soup.findAll("tr")
+                data_raw = str(data_raw)
+            
+            except:
+                error: bool = True
+                print("[WARNING] HTML element not found, trying again...")
+                sleep(2)
+    
+            
+        print("[OK] HTML element found: ", name)
+        with open('data_raw.txt', 'w') as f:
+            f.write(data_raw)
+        data = re.findall(self.ticker_percentage_regex, data_raw)
+        print(data)
