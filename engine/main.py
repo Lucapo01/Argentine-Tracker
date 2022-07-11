@@ -4,7 +4,7 @@ from reader import FundsScrapper
 # Logging config
 logging.basicConfig(
     filename='log.log',
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
 )
@@ -33,7 +33,11 @@ def load_parameters() -> list:
 def main() -> None:
     funds_list: list = load_parameters()
     funds_scrapper = FundsScrapper(funds_list, 6)
-    funds_scrapper.run()
+    funds_data:dict = funds_scrapper.run()
+    for i in funds_data["error"]:
+        logging.error(i)
+    funds_data = funds_data["data"]
+    return funds_data
 
 
-main()
+print(main())
