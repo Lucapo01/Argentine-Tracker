@@ -1,4 +1,4 @@
-from unicodedata import name
+from turtle import update
 import sqlalchemy.orm as _orm
 
 from ..models import models as _models
@@ -26,8 +26,8 @@ def get_ticker_by_name(db: _orm.Session, name: str):
     return db.query(_models.Ticker).filter(_models.Ticker.name == name).first()
 
 
-def get_tickers(db: _orm.Session, skip: int = 0, limit: int = 100):
-    return db.query(_models.Ticker).offset(skip).limit(limit).all()
+def get_tickers(db: _orm.Session):
+    return db.query(_models.Ticker).all()
 
 
 def create_ticker(db: _orm.Session, ticker: _schemas.createTicker):
@@ -36,6 +36,11 @@ def create_ticker(db: _orm.Session, ticker: _schemas.createTicker):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def update_ticker(db: _orm.Session, ticker: _schemas.createTicker):
+    db.query(_models.Ticker).filter(_models.Ticker.name == ticker.name).update({'funds': ticker.funds, 'price': ticker.price, 'type': ticker.type})
+    db.commit()
+
 
 # FIX Here we need to replace post to funds Database
 

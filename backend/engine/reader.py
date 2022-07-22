@@ -31,6 +31,7 @@ class FundsScrapper:
                 fund_json[fund[0]] = fund_data
             else:
                 error_list.append(fund_data["error"] + fund[0])
+        self.driver.close()
         return {"error":error_list, "data":fund_json}
 
     def get_raw_data(self, name: str, url: str) -> str:
@@ -78,9 +79,14 @@ class FundsScrapper:
             
             
             result = {
-            "tickers":text_data_tickers,
-            "qty_ars": text_data_per,
-            "patrimony": patrimony_float
+            "tickers":
+                {
+                    "names": text_data_tickers,
+                    "qty_ars": text_data_per
+                },
+        
+                "patrimony": patrimony_float,
+                "type": ""
             }
             return result
         except Exception as e:

@@ -30,5 +30,6 @@ password = "Lucigar01.."
 hb = HomeBroker(int(broker))
 hb.auth.login(dni=dni, user=user, password=password, raise_exception=True)
 
-data = list(dict(hb.history.get_daily_history('GOGLD', datetime.date.today(), datetime.date.today()))["close"])[0]
+# traer el dia de ayer y el dia de hoy y agarrar el ultimo disponible
+data = list(dict(hb.history.get_daily_history('GOGLD', datetime.date(2022,7,20), datetime.date.today()))["close"])
 print(data)

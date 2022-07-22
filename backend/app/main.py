@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from unicodedata import name
+from fastapi import FastAPI, Depends, HTTPException, Request
+from sqlalchemy import JSON
 import core.schemas.schemas as _schemas
 import core.services.services as _services
 import sqlalchemy.orm as _orm
-from typing import List
+from typing import Dict, List
+import uvicorn
 
 app = FastAPI()
 
@@ -22,14 +25,15 @@ async def createTicker(ticker: _schemas.createTicker, db: _orm.Session = Depends
     return _services.create_ticker(db=db, ticker=ticker)
 
 
-@app.get("/tickers/", response_model=List[_schemas.Ticker])
+@app.get("/tickers/")
 def read_users(
-    skip: int = 0,
-    limit: int = 100,
     db: _orm.Session = Depends(_services.get_db),
 ):
-    tickers = _services.get_tickers(db=db, skip=skip, limit=limit)
-    return tickers
+    tickers = _services.get_tickers(db=db)
+    response = {}
+    for ticker in tickers:
+        response[ticker.id] = ticker.name
+    return response
 
 
 @app.get("/tickers/{ticker_id}", response_model=_schemas.Ticker)
@@ -41,7 +45,19 @@ def read_user(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
         )
     return db_ticker
 
+@app.post("/engineUpdate/{password}")
+async def update_engine(password: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
+    print(password)
+    payload = await request.json()
+    _services.update_ticker(db=db, ticker=_schemas.createTicker(name="test_ticker", funds= payload, price=2, type="1"))
 
 # -------------------------------------------------------------------
 # PLAYGROUND
 # -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# RUN
+# -------------------------------------------------------------------
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, loop="asyncio")

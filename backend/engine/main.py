@@ -29,6 +29,13 @@ def load_parameters() -> list:
         logging.error("[ERROR] Load parameters: " + str(e))
         return []
         
+def price_qty_update(funds_data: dict) -> None:
+
+    for fund in funds_data.values():
+        fund["tickers"]["prices"] = [1] * len(fund["tickers"]["names"])
+
+def send_to_server() -> None:
+    pass
 
 def main() -> None:
     funds_list: list = load_parameters()
@@ -37,6 +44,7 @@ def main() -> None:
     for i in funds_data["error"]:
         logging.error(i)
     funds_data = funds_data["data"]
+    price_qty_update(funds_data)
     return funds_data
 
 
