@@ -1,0 +1,10 @@
+.line-chart {
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        justify-self: center;
+        width: 80%;
+        height: 90%;
+        margin-left: 20px;
+}
