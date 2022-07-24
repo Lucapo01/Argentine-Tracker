@@ -7,6 +7,7 @@ import core.services.services as _services
 import sqlalchemy.orm as _orm
 from typing import Dict, List
 import uvicorn
+from settings import ENGINE_PSWD
 
 app = FastAPI()
 
@@ -28,14 +29,14 @@ async def root():
     return {"message": "Hello World"}
 
 # FIX Security Breach
-@app.post("/createTicker", response_model=_schemas.Ticker)
-async def createTicker(ticker: _schemas.createTicker, db: _orm.Session = Depends(_services.get_db)):
-    db_ticker = _services.get_ticker_by_name(db=db, name=ticker.name)
-    if db_ticker:
-        raise HTTPException(
-            status_code=400, detail="Ticker already in Database."
-        )
-    return _services.create_ticker(db=db, ticker=ticker)
+# @app.post("/createTicker", response_model=_schemas.Ticker)
+# async def createTicker(ticker: _schemas.createTicker, db: _orm.Session = Depends(_services.get_db)):
+#     db_ticker = _services.get_ticker_by_name(db=db, name=ticker.name)
+#     if db_ticker:
+#         raise HTTPException(
+#             status_code=400, detail="Ticker already in Database."
+#         )
+#     return _services.create_ticker(db=db, ticker=ticker)
 
 
 @app.get("/tickers/")
@@ -60,10 +61,13 @@ def read_user(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
 
 @app.post("/engineUpdate/{password}")
 async def update_engine(password: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
-    print(password)
-    payload = await request.json()
-    _services.update_ticker(db=db, ticker=_schemas.createTicker(name="test_ticker", funds= payload, price=2, type="1"))
-
+    if password == ENGINE_PSWD:
+        payload = await request.json()
+        _services.update_ticker(db=db, ticker=_schemas.createTicker(name="test_ticker", funds= payload, price=2, type="1"))
+    else:
+        raise HTTPException(
+            status_code=403, detail="Incorrect Password."
+        )
 # -------------------------------------------------------------------
 # PLAYGROUND
 # -------------------------------------------------------------------
