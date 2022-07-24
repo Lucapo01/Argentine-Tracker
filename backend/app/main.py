@@ -1,5 +1,6 @@
 from unicodedata import name
 from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import JSON
 import core.schemas.schemas as _schemas
 import core.services.services as _services
@@ -8,6 +9,18 @@ from typing import Dict, List
 import uvicorn
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
