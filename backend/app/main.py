@@ -8,6 +8,7 @@ import sqlalchemy.orm as _orm
 from typing import Dict, List
 import uvicorn
 from settings import ENGINE_PSWD
+from datetime import datetime
 
 app = FastAPI()
 
@@ -61,13 +62,40 @@ def read_user(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
 
 @app.post("/engineUpdate/{password}")
 async def update_engine(password: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
-    if password == ENGINE_PSWD:
-        payload = await request.json()
-        _services.update_ticker(db=db, ticker=_schemas.createTicker(name="test_ticker", funds= payload, price=2, type="1"))
-    else:
+    try:
+        today: str = datetime.today().strftime("%d-%m-%Y")
+        if password == ENGINE_PSWD:
+            payload = await request.json()
+            for t in payload.keys():
+                db_ticker = _services.get_ticker_by_name(db=db, name=t)
+                if db_ticker:
+                    new_fund: dict = db_ticker.funds
+                    for f in payload[t].keys():
+                        if f in new_fund.keys():
+                            if today != new_fund[f]["dates"][-1]:
+                                new_fund[f]["dates"].append(today)
+                                new_fund[f]["qty"].append(payload[t][f]["qty"])
+                                new_fund[f]["prices"].append(payload[t][f]["price"])
+                            else:
+                                new_fund[f]["qty"][-1] = payload[t][f]["qty"]
+                                new_fund[f]["prices"][-1] = payload[t][f]["price"]
+                        else:
+                            new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
+                    _services.update_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))                
+                else:
+                    new_fund: dict = {}
+                    for f in payload[t].keys():
+                        new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
+                    _services.create_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))
+        else:
+            raise HTTPException(
+                status_code=403, detail="Incorrect Password."
+            )
+    except Exception as e:
+        print("[ERROR] engineUpdate: ",e)
         raise HTTPException(
-            status_code=403, detail="Incorrect Password."
-        )
+                status_code=500, detail="Internal Server Error"
+            )    
 # -------------------------------------------------------------------
 # PLAYGROUND
 # -------------------------------------------------------------------

@@ -31,5 +31,5 @@ hb = HomeBroker(int(broker))
 hb.auth.login(dni=dni, user=user, password=password, raise_exception=True)
 
 # traer el dia de ayer y el dia de hoy y agarrar el ultimo disponible
-data = list(dict(hb.history.get_daily_history('GOGLD', datetime.date(2022,7,20), datetime.date.today()))["close"])
+data = list(dict(hb.history.get_daily_history('VIST', datetime.date.today()-datetime.timedelta(days=5), datetime.date.today()))["close"])
 print(data)

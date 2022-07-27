@@ -1,5 +1,5 @@
-import json
-import requests
+from datetime import datetime
 
-payload = {"hola": "chau"}
-r = requests.post("http://localhost:8000/engineUpdate/1234", json=payload)
+
+today = datetime.today().strftime("%d-%m-%Y")
+print(today)
