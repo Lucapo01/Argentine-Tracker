@@ -5,12 +5,12 @@ import './LineChart.css'
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale);
 
-const LineChart = () => {
+const LineChart = ({ticker, name}) => {
     const data = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ticker.dates,
         datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            label: name,
+            data: ticker.qty,
             borderColor: '#00ab14',
             borderWidth: 1,
             tension: 0.1

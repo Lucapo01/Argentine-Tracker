@@ -6,34 +6,57 @@ import LineChart from './components/LineChart';
 
 function App() {
     const [tickers, setTickers] = useState({})
+    const [selectedId, setSelectedId] = useState('1')
+    const [selectedTicker, setSelectedTicker] = useState({
+        "id": 0,
+        "name": "",
+        "funds": {
+          "total": {}
+        },
+        "price": 0,
+        "type": ""
+    })
+
+    const fetchTickers = async () => {
+        const res = await fetch('http://localhost:8000/tickers/')
+        const data = await res.json()
+        return data
+    }
+
+    const fetchTicker = async (id) => {
+        const res = await fetch(`http://localhost:8000/tickers/${id}`)
+        const data = await res.json()
+        return data
+    }
 
     useEffect(() => {
         const getTickers = async () => {
             const tickersFromServer = await fetchTickers()
             setTickers(tickersFromServer)
         }
-
         getTickers()
+
+        const getTicker = async () => {
+            const tickerSelected = await fetchTicker(selectedId)
+            setSelectedTicker(tickerSelected)
+        }
+        getTicker()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const fetchTickers = async () => {
-        const res = await fetch('Access-Control-Allow-Origin: http://localhost:8000/tickers/')
-        const data = await res.json()
-        return data
-    }
-
-    const [selected, setSelected] = useState('1')
-
-    const selectTicker = (id) => {
-        setSelected(id)
+    const selectTicker = async (id) => {
+        setSelectedId(id)
+        const tickerSelected = await fetchTicker(id)
+        setSelectedTicker(tickerSelected)
+        console.log(tickerSelected)
     }
 
     return (
         <>
             <Header title='FCI Tracker' />
             <div className='container'>
-                <Tickers tickers={tickers} selectTicker={selectTicker} selected={selected} />
-                <LineChart />
+                <Tickers tickers={tickers} selectTicker={selectTicker} selected={selectedId} />
+                <LineChart ticker={selectedTicker.funds.total} name={selectedTicker.name} />
             </div>
         </>
     );
