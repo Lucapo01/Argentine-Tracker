@@ -110,6 +110,11 @@ def send_to_server(funds_data: dict) -> None:
                 final_json[fund["tickers"]["names"][i]]["total"] = {"qty": 0, "price": fund["tickers"]["prices"][i]}
             final_json[fund["tickers"]["names"][i]][fund_key] = {"qty": fund["tickers"]["qty_ars"][i], "price": fund["tickers"]["prices"][i]}
             final_json[fund["tickers"]["names"][i]]["total"]["qty"] = round(final_json[fund["tickers"]["names"][i]]["total"]["qty"] + fund["tickers"]["qty_ars"][i], 2)
+    
+    #Calcular promedio en total
+    for ticker in final_json.values():
+        ticker["total"]["qty"] = round(ticker["total"]["qty"] / (len(ticker.keys())-1), 2)
+    
     logging.info("Sending JSON: \n" + json.dumps(final_json))
     r = requests.post("http://localhost:8000/engineUpdate/"+ENGINE_PSWD, json=final_json)
     logging.info("Server responded with code: " + str(r.status_code))
