@@ -1,4 +1,3 @@
-from turtle import update
 import sqlalchemy.orm as _orm
 
 from ..models import models as _models
