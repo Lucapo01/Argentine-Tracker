@@ -1,9 +1,12 @@
 import React from 'react'
 import './Tickers.css'
 
-const Ticker = ({id, name, selectTicker, selected}) => {
+const Ticker = ({id, name, selectTicker, selected, toggleMenu}) => {
   return (
-    <div className={id === selected ? 'ticker selected' : 'ticker'} onClick={() => selectTicker(id)}>{name}</div>
+    <div className={id === selected ? 'ticker selected' : 'ticker'} onClick={() => {
+      selectTicker(id)
+      toggleMenu()
+    }}>{name}</div>
   )
 }
 

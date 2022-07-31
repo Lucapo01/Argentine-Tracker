@@ -16,6 +16,7 @@ function App() {
         "price": 0,
         "type": ""
     })
+    const [tickersMenu, setTickersMenu] = useState(false)
 
     const fetchTickers = async () => {
         const res = await fetch('http://localhost:8000/tickers/')
@@ -51,11 +52,15 @@ function App() {
         console.log(tickerSelected)
     }
 
+    const toggleMenu = () => {
+        setTickersMenu(!tickersMenu)
+    }
+
     return (
         <>
-            <Header title='FCI Tracker' />
+            <Header title='FCI Tracker' toggleMenu={toggleMenu}/>
             <div className='container'>
-                <Tickers tickers={tickers} selectTicker={selectTicker} selected={selectedId} />
+                <Tickers tickers={tickers} selectTicker={selectTicker} selected={selectedId} tickersMenu={tickersMenu} toggleMenu={toggleMenu}/>
                 <LineChart ticker={selectedTicker.funds.total} name={selectedTicker.name} />
             </div>
         </>

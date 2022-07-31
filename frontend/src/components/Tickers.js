@@ -3,11 +3,11 @@ import { useState } from 'react'
 import Ticker from './Ticker'
 import './Tickers.css'
 
-const Tickers = ({tickers, selectTicker, selected}) => {
+const Tickers = ({tickers, selectTicker, selected, tickersMenu, toggleMenu}) => {
   const [searchTerm, setSearchTerm] = useState('')
 
   return (
-    <div className='tickers'>
+    <div className={tickersMenu ? 'tickers tickers-menu-active' : 'tickers'}>
         <input className='search' type="text" placeholder='Buscar...' onChange={(event) => {
           setSearchTerm(event.target.value)
         }}/>
@@ -18,7 +18,7 @@ const Tickers = ({tickers, selectTicker, selected}) => {
             return id
           } return ''
         }).map((id, index) => (
-          <Ticker key={id} id={id} name={tickers[id]} selectTicker={selectTicker} selected={selected} />
+          <Ticker key={id} id={id} name={tickers[id]} selectTicker={selectTicker} selected={selected} toggleMenu={toggleMenu}/>
         ))}
     </div>
   )
