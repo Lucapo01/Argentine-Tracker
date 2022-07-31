@@ -49,7 +49,10 @@ const LineChart = ({ticker, name}) => {
                         title: {
                             display: true,
                             text: name,
-                            color: '#ebebeb'
+                            color: '#ebebeb',
+                            font: {
+                                size: 18
+                            }
                         },
                         legend: {
                             display: false
