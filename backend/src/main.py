@@ -60,10 +60,9 @@ def read_user(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
         )
     return db_ticker
 
-@app.post("/engineUpdate/{password}")
-async def update_engine(password: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
+@app.post("/engineUpdate/{password}/{today}")
+async def update_engine(password: str,today: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
     try:
-        today: str = datetime.today().strftime("%d-%m-%Y")
         if password == ENGINE_PSWD:
             payload = await request.json()
             for t in payload.keys():
