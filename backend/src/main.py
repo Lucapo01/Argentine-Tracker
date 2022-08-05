@@ -61,6 +61,20 @@ def read_user(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
         )
     return db_ticker
 
+@app.get("/point/{ticker_id}/{date}", response_model=Dict)
+def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
+    db_ticker = read_user(ticker_id=ticker_id, db=db)
+    resp = {"price": db_ticker.funds["total"]["prices"], "funds": {}}
+    for fund in db_ticker.funds.keys():
+        if fund != "total":
+            try:
+                ind: int = db_ticker.funds[fund]["dates"].index(date)
+                resp["funds"][fund] = db_ticker.funds[fund]["qty"][ind]
+            except:
+                pass
+
+    return resp
+
 @app.post("/engineUpdate/{password}/{today}")
 async def update_engine(password: str,today: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
     try:
