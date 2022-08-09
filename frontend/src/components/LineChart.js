@@ -1,18 +1,42 @@
-import React from 'react'
-//import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js'
+import { React, useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
+/* eslint-disable no-unused-vars */
 import { Chart as ChartJS } from 'chart.js/auto'
 import './LineChart.css'
 
-//Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale);
+const LineChart = ({ selectedId }) => {
+    const [ticker, setTicker] = useState({
+        "id": 0,
+        "name": "",
+        "funds": {
+            "total": {}
+        },
+        "price": 0,
+        "type": ""
+    })
 
-const LineChart = ({ ticker, name, onClick }) => {
+    useEffect(() => {
+        const fetchTicker = async (id) => {
+            const res = await fetch(`http://localhost:8000/tickers/${id}`)
+            const data = await res.json()
+            setTicker(data)
+        }
+
+        fetchTicker(selectedId)
+    }, [selectedId])
+
+    const openDetail = async (element) => {
+        if (element.length > 0) {
+            const date = ticker.funds.total.dates[element[0].index]
+            window.open(`/${selectedId}/${date}`, '_blank', 'noopener,noreferrer');
+        }
+    }
 
     const data = {
-        labels: ticker.dates,
+        labels: ticker.funds.total.dates,
         datasets: [{
-            label: name,
-            data: ticker.qty,
+            label: ticker.name,
+            data: ticker.funds.total.qty,
             borderColor: 'rgba(0, 98, 255, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'rgba(0, 98, 255, 1)',
@@ -40,8 +64,7 @@ const LineChart = ({ ticker, name, onClick }) => {
                             },
                             grid: {
                                 color: '#404040'
-                            },
-                            beginAtZero: true
+                            }
                         },
                         x: {
                             ticks: {
@@ -59,7 +82,7 @@ const LineChart = ({ ticker, name, onClick }) => {
                     plugins: {
                         title: {
                             display: true,
-                            text: name,
+                            text: ticker.name,
                             color: '#000000',
                             font: {
                                 size: 18
@@ -85,7 +108,7 @@ const LineChart = ({ ticker, name, onClick }) => {
                                     const newLineArray = []
                                     const index = context.dataIndex
                                     newLineArray.push(`Cantidad: ${context.dataset.data[index].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
-                                    newLineArray.push(`Precio: ${ticker.prices[index].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
+                                    newLineArray.push(`Precio: ${ticker.funds.total.prices[index].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
                                     return newLineArray
                                 }
                             },
@@ -96,7 +119,7 @@ const LineChart = ({ ticker, name, onClick }) => {
                         mode: 'nearest',
                         intersect: true
                     },
-                    onClick: (evt, element) => onClick(element)
+                    onClick: (evt, element) => openDetail(element)
                 }}
             />
         </div>
