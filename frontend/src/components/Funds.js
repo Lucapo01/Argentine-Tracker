@@ -16,16 +16,18 @@ const Funds = () => {
 
         fetchFunds()
     }, [id, date])
-    
+
     return (
         <>
             {Object.keys(totalFunds).length > 0 &&
                 <div className='funds-container'>
                     <div>
-                        <h3>{date}</h3>
+                        <h3>Fecha: {date}</h3>
                         <h3>Precio: {totalFunds.price}</h3>
                     </div>
                     <div className='funds'>
+                        <h4 className='fund'>Fondo</h4>
+                        <h4 className='fund'>Cantidad</h4>
                         {Object.keys(totalFunds.funds).map((fund, index) => (
                             <React.Fragment key={fund}>
                                 <h4 className='fund'>{fund}</h4>

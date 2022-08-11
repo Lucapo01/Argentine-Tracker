@@ -9,7 +9,8 @@ const LineChart = ({ selectedId }) => {
         "id": 0,
         "name": "",
         "funds": {
-            "total": {}
+            "total": {},
+            "avg" : {}
         },
         "price": 0,
         "type": ""
@@ -35,14 +36,24 @@ const LineChart = ({ selectedId }) => {
     const data = {
         labels: ticker.funds.total.dates,
         datasets: [{
-            label: ticker.name,
+            label: "Total",
             data: ticker.funds.total.qty,
             borderColor: 'rgba(0, 98, 255, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'rgba(0, 98, 255, 1)',
-            pointRadius: 6,
-            pointHoverRadius: 8,
-            pointHoverBackgroundColor: 'rgba(0, 98, 255, 1)',
+            pointRadius: 7,
+            pointHoverRadius: 9,
+            fill: false,
+            tension: 0
+        },
+        {
+            label: "Promedio",
+            data: ticker.funds.avg.qty,
+            borderColor: 'rgba(0, 174, 232, 1)',
+            borderWidth: 1,
+            pointBackgroundColor: 'rgba(0, 174, 232, 1)',
+            pointRadius: 7,
+            pointHoverRadius: 9,
             fill: false,
             tension: 0
         }]
@@ -89,10 +100,13 @@ const LineChart = ({ selectedId }) => {
                             }
                         },
                         legend: {
-                            display: false
+                            display: true,
+                            onHover: (event, element) => {
+                                event.native.target.style.cursor = 'pointer'
+                            }
                         },
                         tooltip: {
-                            mode: 'index',
+                            mode: 'nearest',
                             intersect: true,
                             titleFont: {
                                 size: 16
@@ -117,9 +131,13 @@ const LineChart = ({ selectedId }) => {
                     },
                     hover: {
                         mode: 'nearest',
-                        intersect: true
+                        intersect: true,
+                        
                     },
-                    onClick: (evt, element) => openDetail(element)
+                    onClick: (event, element) => openDetail(element),
+                    onHover: (event, element) => {
+                        event.native.target.style.cursor = element[0] ? 'pointer' : 'default'
+                    }
                 }}
             />
         </div>
