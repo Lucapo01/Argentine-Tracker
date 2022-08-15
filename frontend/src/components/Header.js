@@ -13,7 +13,7 @@ const Header = ({ title, toggleMenu }) => {
         <div className='header'>
             {location.pathname === '/' && <FontAwesomeIcon icon={faBars} className='bars' onClick={() => toggleMenu()}/>}
             <div className='title-container' onClick={() => navigate('/')}>
-                <img alt='' src={process.env.PUBLIC_URL + "favicon.ico"} className='icon'/>
+                <img alt='' src={window.location.origin + '/logo.png'} className='icon'/>
                 <h1 className='title'>{title}</h1>
             </div>
         </div>

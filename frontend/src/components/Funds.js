@@ -21,9 +21,12 @@ const Funds = () => {
         <>
             {Object.keys(totalFunds).length > 0 &&
                 <div className='funds-container'>
-                    <div>
-                        <h3>Fecha: {date}</h3>
-                        <h3>Precio: {totalFunds.price}</h3>
+                    <div className='data-container'>
+                        <h2>{totalFunds.name}</h2>
+                        <h2>Fecha: {date}</h2>
+                        <h2>Precio: {totalFunds.price}</h2>
+                        <h2>Total: {totalFunds.total}</h2>
+                        <h2>Promedio: {totalFunds.avg}</h2>
                     </div>
                     <div className='funds'>
                         <h4 className='fund'>Fondo</h4>
