@@ -64,7 +64,7 @@ def read_user(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
 @app.get("/point/{ticker_id}/{date}", response_model=Dict)
 def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = read_user(ticker_id=ticker_id, db=db)
-    resp = {"date": date, "price": 0.0, "name": db_ticker.name,"funds": {}}
+    resp = {"date": date, "price": 0.0, "name": db_ticker.name, "total": 0.0, "avg": 0.0, "funds": {}}
     for fund in db_ticker.funds.keys():
         try:
             ind: int = db_ticker.funds[fund]["dates"].index(date)
@@ -74,6 +74,11 @@ def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db
             
         except:
             pass
+
+    resp["total"] = resp["funds"]["total"]
+    resp["avg"] = resp["funds"]["avg"]
+    resp["funds"].pop('total', None)
+    resp["funds"].pop('avg', None)
 
     return resp
 
