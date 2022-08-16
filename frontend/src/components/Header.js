@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 
-const Header = ({ title, toggleMenu }) => {
+const Header = ({ toggleMenu }) => {
     const location = useLocation()
     const navigate = useNavigate()
 
@@ -14,7 +14,7 @@ const Header = ({ title, toggleMenu }) => {
             {location.pathname === '/' && <FontAwesomeIcon icon={faBars} className='bars' onClick={() => toggleMenu()}/>}
             <div className='title-container' onClick={() => navigate('/')}>
                 <img alt='' src={window.location.origin + '/logo.png'} className='icon'/>
-                <h1 className='title'>{title}</h1>
+                <h1 className='title'>FCI Tracker</h1>
             </div>
         </div>
     )

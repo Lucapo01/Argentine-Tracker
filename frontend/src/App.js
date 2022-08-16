@@ -5,6 +5,7 @@ import Header from './components/Header'
 import Tickers from './components/Tickers';
 import LineChart from './components/LineChart';
 import Funds from './components/Funds';
+import Footer from './components/Footer';
 
 function App() {
     const [selectedId, setSelectedId] = useState('1')
@@ -20,7 +21,7 @@ function App() {
 
     return (
         <>
-            <Header title='FCI Tracker' toggleMenu={toggleMenu} />
+            <Header toggleMenu={toggleMenu} />
             <Routes>
                 <Route path='/' exact element={
                     <>
@@ -32,6 +33,7 @@ function App() {
                 } />
                 <Route path='/:id/:date' exact element={<Funds />} />
             </Routes>
+            <Footer/>
         </>
     );
 }
