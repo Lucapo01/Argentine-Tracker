@@ -1,6 +1,7 @@
 .funds-container {
         color: black;
         width: 100vw;
+        min-height: 74.6vh;
         display: flex;
         flex-direction: column;
         position: relative;

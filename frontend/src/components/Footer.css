@@ -1,31 +1,36 @@
 .footer-container {
         width: 100vw;
-        height: 15vh;
+        min-height: 18.5vh;
+        height: fit-content;
         background-color: #006de9;
         margin-top: 4rem;
         display: flex;
         justify-content: start;
         align-items: center;
+        flex-wrap: wrap;
         font-size: 1rem;
         font-weight: light;
 }
 
+.footer-container div {
+        padding: 3rem;
+        overflow: hidden;
+}
+
 .footer-container div:nth-child(1) {
-        margin-right: 14rem;
-        margin-left: 17rem;
+        margin-left: 12vw;
         font-size: 1rem;
         font-weight: light;
 }
 
 .footer-container div:nth-child(2) {
-        margin-right: 5rem;
-        margin-left: 5rem;
+        margin-left: 8vw;
         font-size: 1rem;
         font-weight: light;
 }
 
 .footer-container div:nth-child(3) {
-        margin-left: 5rem;
+        margin-left: 8vw;
         font-size: 1rem;
         font-weight: light;
 }
