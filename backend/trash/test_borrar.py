@@ -1,5 +1,5 @@
-from datetime import datetime
+l = [{2:2}, {3:4}, "a"]
+print(l)
 
-
-today = datetime.today().strftime("%d-%m-%Y")
-print(today)
+l.remove({3:4})
+print(l)
