@@ -35,6 +35,12 @@
         font-weight: light;
 }
 
+.footer-container div:nth-child(4) {
+        margin-left: 8vw;
+        font-size: 1rem;
+        font-weight: light;
+}
+
 .footer-container p {
         margin-top: .5rem;
         font-size: 1rem;
