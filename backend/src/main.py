@@ -140,9 +140,7 @@ async def update_engine(password: str,today: str, request: Request, db: _orm.Ses
                         new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
                     _services.create_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))
         else:
-            raise HTTPException(
-                status_code=403, detail="Incorrect Password."
-            )
+            return "Incorrect Password"
     except Exception as e:
         print("[ERROR] engineUpdate: ",e)
         raise HTTPException(
