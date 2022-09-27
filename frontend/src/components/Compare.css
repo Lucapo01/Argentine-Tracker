@@ -1,6 +1,6 @@
 .compare-container {
         color: black;
-        width: 100vw;
+        width: 100%;
         min-height: 74.6vh;
         display: flex;
         flex-direction: column;
@@ -51,4 +51,14 @@
         margin-bottom: 0 - 1px;
         font-size: 1.2rem;
         font-weight: normal;
+}
+
+.arrow {
+        color: #1c1c1c;
+        margin-left: .5rem;
+        font-size: medium;
+}
+
+.rotated {
+        transform: rotate(180deg);
 }

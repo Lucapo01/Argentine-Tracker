@@ -8,7 +8,7 @@ const Funds = () => {
     const { id } = useParams()
     const { date } = useParams()
     const [totalFunds, setTotalFunds] = useState({})
-    const [fundsList, setFundsList] = useState({})
+    const [fundsList, setFundsList] = useState([])
     const [descendingOrder, setDescendingOrder] = useState(true)
 
     useEffect(() => {
