@@ -16,8 +16,7 @@ const Funds = () => {
             const res = await fetch(`http://localhost:8000/point/${id}/${date}`)
             const data = await res.json()
             setTotalFunds(data)
-            const fundsListFromServer = Object.keys(data.funds).map((key) => {return [key, data.funds[key]]})
-            fundsListFromServer.sort((first, second) => {
+            const fundsListFromServer = data.funds.sort((first, second) => {
                 return second[1] - first[1];
             })
             setFundsList(fundsListFromServer)

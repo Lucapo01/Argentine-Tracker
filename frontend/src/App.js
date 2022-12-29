@@ -24,6 +24,10 @@ function App() {
 
     const selectTicker = (id) => {
         setSelectedId(id)
+        setDate1('')
+        setDate2('')
+        setEmptyDate(false)
+        setEqualDates(false)
     }
 
     const passDates = (dates) => {
@@ -69,7 +73,7 @@ function App() {
                 <Route path='/point/:id/:date' exact element={<Funds />} />
                 <Route path='/compare/:id/:date1/:date2' exact element={<Compare />} />
             </Routes>
-            <Footer/>
+            <Footer />
         </>
     );
 }

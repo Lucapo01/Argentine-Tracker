@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import './Compare.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowDown} from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 
 const Compare = () => {
     const { id } = useParams()
@@ -10,7 +10,8 @@ const Compare = () => {
     const { date2 } = useParams()
     const [compareData, setCompareData] = useState({})
     const [fundsList, setFundsList] = useState([])
-    const [qtyDescendingOrder, setQtyDescendingOrder] = useState(true)
+    const [descending, setDescending] = useState(true)
+    const [sortedColumn, setSortedColumn] = useState(3)
 
     useEffect(() => {
         const fetchFunds = async () => {
@@ -28,18 +29,21 @@ const Compare = () => {
         fetchFunds()
     }, [id, date1, date2])
 
-    const changeFundsListOrder = () => {
-        setQtyDescendingOrder(!qtyDescendingOrder)
-        const qtyDescendingOrderAux = !qtyDescendingOrder
-        if (qtyDescendingOrderAux) {
-            fundsList.sort((first, second) => {
-                return second[3] - first[3];
-            })
+    const sortByColumn = (column) => {
+        if (descending) {
+            const sorted = [...fundsList].sort((first, second) =>
+                first[column] > second[column] ? 1 : -1
+            )
+            setFundsList(sorted)
+            setDescending(!descending)
         } else {
-            fundsList.sort((first, second) => {
-                return first[3] - second[3];
-            })
+            const sorted = [...fundsList].sort((first, second) =>
+                first[column] < second[column] ? 1 : -1
+            )
+            setFundsList(sorted)
+            setDescending(!descending)
         }
+        setSortedColumn(column)
     }
 
     return (
@@ -52,14 +56,36 @@ const Compare = () => {
                         <h2>Precio: {compareData.price}</h2>
                     </div>
                     <div className='compare-grid'>
-                        <h5 className='compare-data'>Fondo</h5>
-                        <h5 className='compare-data'>{date1}</h5>
-                        <h5 className='compare-data'>{date2}</h5>
-                        <h5 className='compare-data' onClick={() => changeFundsListOrder()}>
-                            Qty Delta
-                            <FontAwesomeIcon icon={faArrowDown} className={qtyDescendingOrder ? 'arrow' : 'arrow rotated'}/>
+                        <h5 className='compare-data' onClick={() => sortByColumn(0)}>
+                            Fondo
+                            {sortedColumn === 0 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'} />
+                            }
+                        </h5>
+                        <h5 className='compare-data' onClick={() => sortByColumn(1)}>
+                            {date1}
+                            {sortedColumn === 1 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'} />
+                            }
+                        </h5>
+                        <h5 className='compare-data' onClick={() => sortByColumn(2)}>
+                            {date2}
+                            {sortedColumn === 2 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
+                            }
                             </h5>
-                        <h5 className='compare-data'>% Delta</h5>
+                        <h5 className='compare-data' onClick={() => sortByColumn(3)}>
+                            Qty Delta
+                            {sortedColumn === 3 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
+                            }
+                        </h5>
+                        <h5 className='compare-data' onClick={() => sortByColumn(4)}>
+                            % Delta
+                            {sortedColumn === 4 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
+                            }
+                            </h5>
                         <h5 className='compare-data'>Total</h5>
                         <h5 className='compare-data'>{compareData.table[1][1]}</h5>
                         <h5 className='compare-data'>{compareData.table[1][2]}</h5>
