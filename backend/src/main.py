@@ -65,22 +65,17 @@ def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
 @app.get("/point/{ticker_id}/{date}", response_model=Dict)
 def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
-    resp = {"date": date, "price": 0.0, "name": db_ticker.name, "total": 0.0, "avg": 0.0, "funds": {}}
+    resp = {"date": date, "price": 0.0, "name": db_ticker.name, "funds": []}
     for fund in db_ticker.funds.keys():
         try:
             ind: int = db_ticker.funds[fund]["dates"].index(date)
-            resp["funds"][fund] = round(db_ticker.funds[fund]["qty"][ind], 2)
+            resp["funds"].append([fund, round(db_ticker.funds[fund]["qty"][ind], 2)])
             if resp["price"] == 0.0:
                 resp["price"] =  round(db_ticker.funds[fund]["prices"][ind], 2)
             
         except Exception as e:
-            print(f"[WARNING] /point ticker name: {fund} error: {str(e)}")
+            print(f"[WARNING] /point fund name: {fund} error: {str(e)}")
             pass
-
-    resp["total"] = resp["funds"]["total"]
-    resp["avg"] = resp["funds"]["avg"]
-    resp["funds"].pop('total', None)
-    resp["funds"].pop('avg', None)
 
     return resp
 
@@ -97,19 +92,28 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
         }
     
     dif["table"].append(["Fund", date1, date2, "Qty Delta", "% Delta"])
-    dif["table"].append(["total", resp1["total"], resp2["total"], round(resp2["total"]-resp1["total"],2), round(((resp2["total"]-resp1["total"]) * 100)/ resp1["total"], 2)])
-    dif["table"].append(["avg", resp1["avg"], resp2["avg"], round(resp2["avg"]-resp1["avg"], 2), round(((resp2["avg"]-resp1["avg"]) * 100)/ resp1["avg"], 2)])
-    for key in resp2["funds"].keys():
-        if key in resp1["funds"].keys():
-            dif_qty: float = round(resp2["funds"][key] - resp1["funds"][key],2)
+   
+    # Convert funds to dicts
+    resp1_funds_dict: dict = {}
+    for fund in resp1["funds"]:
+        resp1_funds_dict[fund[0]] = fund[1]
+    
+    resp2_funds_dict: dict = {}
+    for fund in resp2["funds"]:
+        resp2_funds_dict[fund[0]] = fund[1]
+    
+    
+    for key in resp2_funds_dict:
+        if key in resp1_funds_dict:
+            dif_qty: float = round(resp2_funds_dict[key] - resp1_funds_dict[key],2)
             try:
-                dif_per: float = round((dif_qty*100)/resp1["funds"][key],2)
+                dif_per: float = round((dif_qty*100)/resp1_funds_dict[key],2)
             except:
                 dif_per: float = 0
-            dif["table"].append([key, resp1["funds"][key], resp2["funds"][key], dif_qty, dif_per])
+            dif["table"].append([key, resp1_funds_dict[key], resp2_funds_dict[key], dif_qty, dif_per])
         
         else:
-            dif["table"].append([key, 0, resp2["funds"][key], resp2["funds"][key], 100])
+            dif["table"].append([key, 0, resp2_funds_dict[key], resp2_funds_dict[key], 100])
     
     return dif
 
