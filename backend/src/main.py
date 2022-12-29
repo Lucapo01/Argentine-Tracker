@@ -73,7 +73,8 @@ def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db
             if resp["price"] == 0.0:
                 resp["price"] =  round(db_ticker.funds[fund]["prices"][ind], 2)
             
-        except:
+        except Exception as e:
+            print(f"[WARNING] /point ticker name: {fund} error: {str(e)}")
             pass
 
     resp["total"] = resp["funds"]["total"]
