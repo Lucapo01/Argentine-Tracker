@@ -66,6 +66,16 @@ def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
 def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
     resp = {"date": date, "price": 0.0, "name": db_ticker.name, "funds": []}
+
+    # Add total and avg at the beginning of the table
+    first_keys = ["total", "avg"]
+    for key in first_keys:
+        ind: int = db_ticker.funds[key]["dates"].index(date)
+        resp["funds"].append([key, round(db_ticker.funds[key]["qty"][ind], 2)])
+        if resp["price"] == 0.0:
+            resp["price"] =  round(db_ticker.funds[key]["prices"][ind], 2)
+        db_ticker.funds.pop(key)
+
     for fund in db_ticker.funds.keys():
         try:
             ind: int = db_ticker.funds[fund]["dates"].index(date)
@@ -102,18 +112,6 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
     resp2_funds_dict: dict = {}
     for fund in resp2["funds"]:
         resp2_funds_dict[fund[0]] = fund[1]
-    
-    # Get total and avg put it at the beggining of the table
-    first_keys = ["total", "avg"]
-    for key in first_keys:
-        dif_qty: float = round(resp2_funds_dict[key] - resp1_funds_dict[key],2)
-        try:
-            dif_per: float = round((dif_qty*100)/resp1_funds_dict[key],2)
-        except:
-            dif_per: float = 0
-        dif["table"].append([key, resp1_funds_dict[key], resp2_funds_dict[key], dif_qty, dif_per])
-        resp1_funds_dict.pop(key)
-        resp2_funds_dict.pop(key)
 
     # Get the rest of the funds
     for key in resp2_funds_dict:
