@@ -92,6 +92,7 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
         }
     
     dif["table"].append(["Fund", date1, date2, "Qty Delta", "% Delta"])
+
    
     # Convert funds to dicts
     resp1_funds_dict: dict = {}
@@ -102,7 +103,19 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
     for fund in resp2["funds"]:
         resp2_funds_dict[fund[0]] = fund[1]
     
-    
+    # Get total and avg put it at the beggining of the table
+    first_keys = ["total", "avg"]
+    for key in first_keys:
+        dif_qty: float = round(resp2_funds_dict[key] - resp1_funds_dict[key],2)
+        try:
+            dif_per: float = round((dif_qty*100)/resp1_funds_dict[key],2)
+        except:
+            dif_per: float = 0
+        dif["table"].append([key, resp1_funds_dict[key], resp2_funds_dict[key], dif_qty, dif_per])
+        resp1_funds_dict.pop(key)
+        resp2_funds_dict.pop(key)
+
+    # Get the rest of the funds
     for key in resp2_funds_dict:
         if key in resp1_funds_dict:
             dif_qty: float = round(resp2_funds_dict[key] - resp1_funds_dict[key],2)
