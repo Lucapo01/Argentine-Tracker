@@ -65,7 +65,7 @@ def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
 def excel(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
     some_file_path = ExcelHandler.get_excel(db_ticker.name)
-    return FileResponse(some_file_path)
+    return FileResponse(some_file_path, filename=f"{db_ticker.name}.xlsx")
 
 @app.get("/point/{ticker_id}/{date}", response_model=Dict)
 def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
