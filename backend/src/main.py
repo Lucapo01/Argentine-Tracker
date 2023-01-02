@@ -1,14 +1,13 @@
-from unicodedata import name
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import JSON
 import core.schemas.schemas as _schemas
 import core.services.services as _services
 import sqlalchemy.orm as _orm
-from typing import Dict, List
+from typing import Dict
 import uvicorn
 from settings import ENGINE_PSWD
-from datetime import datetime
+from excel_handler import handler as ExcelHandler
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -61,6 +60,12 @@ def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
             status_code=404, detail="This Ticker does not exist."
         )
     return db_ticker
+
+@app.get("/excel/{ticker_id}", response_class=FileResponse)
+def excel(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
+    db_ticker = tickers(ticker_id=ticker_id, db=db)
+    some_file_path = ExcelHandler.get_excel(db_ticker.name)
+    return FileResponse(some_file_path)
 
 @app.get("/point/{ticker_id}/{date}", response_model=Dict)
 def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
@@ -134,6 +139,7 @@ async def update_engine(password: str,today: str, request: Request, db: _orm.Ses
     try:
         if password == ENGINE_PSWD:
             payload = await request.json()
+            ExcelHandler.update_excel(payload, today)
             for t in payload.keys():
                 db_ticker = _services.get_ticker_by_name(db=db, name=t)
                 if db_ticker:
