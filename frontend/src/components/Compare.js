@@ -64,15 +64,15 @@ const Compare = () => {
     return (
         <>
             {Object.keys(compareData).length > 0 &&
-                <div className='compare-container'>
-                    <div className='compare-initial-data'>
-                        <h2 className='title'>{compareData.name}</h2>
-                        <h2 className='sub-title'>Fechas: {compareData.date}</h2>
+                <div className='funds-container'>
+                    <div className='initial-data'>
+                        <h2 className='fund-title'>{compareData.name}</h2>
+                        <h2 className='fund-subtitle'>Fechas: {compareData.date}</h2>
                         <div>
-                            <h2 className='sub-title'>Precio: {compareData.price}</h2>
+                            <h2 className='fund-subtitle'>Precio: {compareData.price}</h2>
                             <button className={'compare-btn'} onClick={exportFunds}>
-                                        <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
-                                        Descargar
+                                <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
+                                Descargar
                             </button>
                         </div>
                     </div>
@@ -94,7 +94,7 @@ const Compare = () => {
                             {sortedColumn === 2 &&
                                 <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
                             }
-                            </h5>
+                        </h5>
                         <h5 className='compare-data' onClick={() => sortByColumn(3)}>
                             Qty Delta
                             {sortedColumn === 3 &&
@@ -106,7 +106,7 @@ const Compare = () => {
                             {sortedColumn === 4 &&
                                 <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
                             }
-                            </h5>
+                        </h5>
                         <h5 className='compare-data'>Total</h5>
                         <h5 className='compare-data'>{compareData.table[1][1]}</h5>
                         <h5 className='compare-data'>{compareData.table[1][2]}</h5>
@@ -117,7 +117,7 @@ const Compare = () => {
                         <h5 className='compare-data'>{compareData.table[2][2]}</h5>
                         <h5 className='compare-data'>{compareData.table[2][3]}</h5>
                         <h5 className='compare-data'>{compareData.table[2][4]}</h5>
-                        {fundsList.map((fund, index) => (
+                        {fundsList.map((fund) => (
                             fund.map((data, index) => (
                                 <h5 key={index} className='compare-data'>{data}</h5>
                             ))

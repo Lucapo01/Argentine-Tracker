@@ -1,4 +1,4 @@
-.compare-container {
+.funds-container {
         color: black;
         width: 100%;
         min-height: 74.6vh;
@@ -9,33 +9,32 @@
         padding-bottom: 4rem;
 }
 
-.compare-initial-data {
+.initial-data {
         justify-self: center;
         align-self: center;
         display: flex;
         flex-direction: column;
         width: 80vw;
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
 }
 
-.compare-initial-data div {
-        display: flex;
-        justify-content: space-between;
-}
-
-.title {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+.fund-title {
+        margin-bottom: .5rem;
         font-size: xx-large;
         font-weight: 600;
 }
 
-.sub-title {
+.fund-subtitle {
         margin-top: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: .7rem;
         font-size: 1.5rem;
-        font-weight: 600;
+        font-weight: 400;
+}
+
+.initial-data div {
+        display: flex;
+        justify-content: space-between;
 }
 
 .excel-icon {

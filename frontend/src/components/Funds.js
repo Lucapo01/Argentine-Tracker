@@ -3,19 +3,22 @@ import { useParams } from 'react-router-dom'
 import './Funds.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown} from '@fortawesome/free-solid-svg-icons'
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons'
+import * as XLSX from 'xlsx'
 
 const Funds = () => {
     const { id } = useParams()
     const { date } = useParams()
-    const [totalFunds, setTotalFunds] = useState({})
+    const [fundsData, setFundsData] = useState({})
     const [fundsList, setFundsList] = useState([])
-    const [descendingOrder, setDescendingOrder] = useState(true)
+    const [descending, setDescending] = useState(true)
+    const [sortedColumn, setSortedColumn] = useState(1)
 
     useEffect(() => {
         const fetchFunds = async () => {
             const res = await fetch(`http://localhost:8000/point/${id}/${date}`)
             const data = await res.json()
-            setTotalFunds(data)
+            setFundsData(data)
             const fundsListFromServer = data.funds.slice(2)
             fundsListFromServer.sort((first, second) => {
                 return second[1] - first[1];
@@ -26,42 +29,72 @@ const Funds = () => {
         fetchFunds()
     }, [id, date])
 
-    const changeFundsListOrder = () => {
-        setDescendingOrder(!descendingOrder)
-        const desendingOrderAux = !descendingOrder
-        if (desendingOrderAux) {
-            fundsList.sort((first, second) => {
-                return second[1] - first[1];
-            })
+    const sortByColumn = (column) => {
+        if (descending) {
+            const sorted = [...fundsList].sort((first, second) =>
+                first[column] > second[column] ? 1 : -1
+            )
+            setFundsList(sorted)
+            setDescending(!descending)
         } else {
-            fundsList.sort((first, second) => {
-                return first[1] - second[1];
-            })
+            const sorted = [...fundsList].sort((first, second) =>
+                first[column] < second[column] ? 1 : -1
+            )
+            setFundsList(sorted)
+            setDescending(!descending)
         }
+        setSortedColumn(column)
+    }
+
+    const exportFunds = () => {
+        const fundsToExcel = [...fundsList]
+        fundsToExcel.unshift(fundsData.funds[1])
+        fundsToExcel.unshift(fundsData.funds[0])
+        fundsToExcel.unshift(['Fund', fundsData.date])
+
+        let wb = XLSX.utils.book_new(),
+            ws = XLSX.utils.aoa_to_sheet(fundsToExcel)
+
+        XLSX.utils.book_append_sheet(wb, ws, `${fundsData.name} ${fundsData.date}`)
+        XLSX.writeFile(wb, `${fundsData.name} ${fundsData.date}.xlsx`)
     }
 
     return (
         <>
-            {Object.keys(totalFunds).length > 0 &&
+            {Object.keys(fundsData).length > 0 &&
                 <div className='funds-container'>
-                    <div className='funds-initial-data'>
-                        <h2>{totalFunds.name}</h2>
-                        <h2>Fecha: {date}</h2>
-                        <h2>Precio: {totalFunds.price}</h2>
-                        <h2>Total: {totalFunds.funds[0][1]}</h2>
-                        <h2>Promedio: {totalFunds.funds[1][1]}</h2>
+                    <div className='initial-data'>
+                        <h2 className='fund-title'>{fundsData.name}</h2>
+                        <h2 className='fund-subtitle'>Fecha: {date}</h2>
+                        <div>
+                            <h2 className='fund-subtitle'>Precio: {fundsData.price}</h2>
+                            <button className='compare-btn' onClick={exportFunds}>
+                                <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
+                                Descargar
+                            </button>
+                        </div>
                     </div>
                     <div className='funds-grid'>
-                        <h4 className='fund'>Fondo</h4>
-                        <h4 className='fund' onClick={() => changeFundsListOrder()}>
+                        <h4 className='fund' onClick={() => sortByColumn(0)}>
+                            Fondo
+                            {sortedColumn === 0 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
+                            }
+                        </h4>
+                        <h4 className='fund' onClick={() => sortByColumn(1)}>
                             Cantidad
-                            <FontAwesomeIcon icon={faArrowDown} className={descendingOrder ? 'arrow' : 'arrow rotated'}/>
-                            </h4>
+                            {sortedColumn === 1 &&
+                                <FontAwesomeIcon icon={faArrowDown} className={descending ? 'arrow' : 'arrow rotated'}/>
+                            }
+                        </h4>
+                        <h4 className='fund'>Total</h4>
+                        <h4 className='fund'>{fundsData.funds[0][1]}</h4>
+                        <h4 className='fund'>Promedio</h4>
+                        <h4 className='fund'>{fundsData.funds[1][1]}</h4>
                         {fundsList.map((fund) => (
-                            <React.Fragment key={fund}>
-                                <h4 className='fund'>{fund[0]}</h4>
-                                <h4 className='fund'>{fund[1]}</h4>
-                            </React.Fragment>
+                            fund.map((data, index) => (
+                                <h4 key={index} className='fund'>{data}</h4>
+                            ))
                         ))}
                     </div>
                 </div>
