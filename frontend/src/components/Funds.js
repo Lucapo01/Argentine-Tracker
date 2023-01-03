@@ -16,7 +16,8 @@ const Funds = () => {
             const res = await fetch(`http://localhost:8000/point/${id}/${date}`)
             const data = await res.json()
             setTotalFunds(data)
-            const fundsListFromServer = data.funds.sort((first, second) => {
+            const fundsListFromServer = data.funds.slice(2)
+            fundsListFromServer.sort((first, second) => {
                 return second[1] - first[1];
             })
             setFundsList(fundsListFromServer)
@@ -47,8 +48,8 @@ const Funds = () => {
                         <h2>{totalFunds.name}</h2>
                         <h2>Fecha: {date}</h2>
                         <h2>Precio: {totalFunds.price}</h2>
-                        <h2>Total: {totalFunds.total}</h2>
-                        <h2>Promedio: {totalFunds.avg}</h2>
+                        <h2>Total: {totalFunds.funds[0][1]}</h2>
+                        <h2>Promedio: {totalFunds.funds[1][1]}</h2>
                     </div>
                     <div className='funds-grid'>
                         <h4 className='fund'>Fondo</h4>

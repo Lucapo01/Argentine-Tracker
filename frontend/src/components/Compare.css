@@ -19,15 +19,27 @@
         padding-bottom: 1.5rem;
 }
 
-.compare-initial-data h2 {
+.compare-initial-data div {
+        display: flex;
+        justify-content: space-between;
+}
+
+.title {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        font-size: xx-large;
+        font-weight: 600;
+}
+
+.sub-title {
         margin-top: 1rem;
         margin-bottom: 1rem;
         font-size: 1.5rem;
         font-weight: 600;
 }
 
-.compare-initial-data h2:nth-child(1) {
-        font-size: xx-large;
+.excel-icon {
+        margin-right: .5rem;
 }
 
 .compare-grid {

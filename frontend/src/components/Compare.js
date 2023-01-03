@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import './Compare.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons'
+import * as XLSX from 'xlsx'
 
 const Compare = () => {
     const { id } = useParams()
@@ -46,14 +48,33 @@ const Compare = () => {
         setSortedColumn(column)
     }
 
+    const exportFunds = () => {
+        const fundsToExcel = [...fundsList]
+        fundsToExcel.unshift(compareData.table[2])
+        fundsToExcel.unshift(compareData.table[1])
+        fundsToExcel.unshift(compareData.table[0])
+
+        let wb = XLSX.utils.book_new(),
+            ws = XLSX.utils.aoa_to_sheet(fundsToExcel)
+
+        XLSX.utils.book_append_sheet(wb, ws, `${compareData.name} ${compareData.date}`)
+        XLSX.writeFile(wb, `${compareData.name} ${compareData.date}.xlsx`)
+    }
+
     return (
         <>
             {Object.keys(compareData).length > 0 &&
                 <div className='compare-container'>
                     <div className='compare-initial-data'>
-                        <h2>{compareData.name}</h2>
-                        <h2>Fechas: {compareData.date}</h2>
-                        <h2>Precio: {compareData.price}</h2>
+                        <h2 className='title'>{compareData.name}</h2>
+                        <h2 className='sub-title'>Fechas: {compareData.date}</h2>
+                        <div>
+                            <h2 className='sub-title'>Precio: {compareData.price}</h2>
+                            <button className={'compare-btn'} onClick={exportFunds}>
+                                        <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
+                                        Descargar
+                            </button>
+                        </div>
                     </div>
                     <div className='compare-grid'>
                         <h5 className='compare-data' onClick={() => sortByColumn(0)}>
