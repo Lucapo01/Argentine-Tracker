@@ -18,7 +18,7 @@ const LineChart = ({ selectedId, passDates }) => {
 
     useEffect(() => {
         const fetchTicker = async (id) => {
-            const res = await fetch(`http://localhost:8000/tickers/${id}`)
+            const res = await fetch(`http://${process.env.REACT_APP_PORT}/tickers/${id}`)
             const data = await res.json()
             setTicker(data)
             passDates(data.funds.total.dates)

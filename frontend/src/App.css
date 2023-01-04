@@ -6,9 +6,16 @@
         width: 100%;
         height: 94vh;
         position: relative;
-        top: 6vh;
+        top: 5vh;
         color: black;
         padding-bottom: 3rem;
+}
+
+.linechart-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
 }
 
 .dates-selector-container {
@@ -19,7 +26,7 @@
         margin-left: 1rem;
 }
 
-button  {
+button {
         background-color: #006de9;
         color: #ffffff;
         width: 11rem;
@@ -37,14 +44,14 @@ button:focus {
         outline: 0;
 }
 
-.compare-btn {
-        margin-top: 1rem;
-}
-
 button:hover {
         background-color: #1481ff;
         cursor: pointer;
         transition: 200ms;
+}
+
+.compare-btn {
+        margin-top: 1rem;
 }
 
 .empty-date::before {

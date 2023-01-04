@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import './Funds.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown} from '@fortawesome/free-solid-svg-icons'
-import { faFileExcel } from '@fortawesome/free-solid-svg-icons'
+import DownloadButton from './DownloadButton'
 import * as XLSX from 'xlsx'
 
 const Funds = () => {
@@ -16,7 +16,7 @@ const Funds = () => {
 
     useEffect(() => {
         const fetchFunds = async () => {
-            const res = await fetch(`http://localhost:8000/point/${id}/${date}`)
+            const res = await fetch(`http://${process.env.REACT_APP_PORT}/point/${id}/${date}`)
             const data = await res.json()
             setFundsData(data)
             const fundsListFromServer = data.funds.slice(2)
@@ -68,10 +68,7 @@ const Funds = () => {
                         <h2 className='fund-subtitle'>Fecha: {date}</h2>
                         <div>
                             <h2 className='fund-subtitle'>Precio: {fundsData.price}</h2>
-                            <button onClick={exportFunds}>
-                                <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
-                                Descargar
-                            </button>
+                            <DownloadButton exportFunds={exportFunds}/>
                         </div>
                     </div>
                     <div className='funds-grid'>

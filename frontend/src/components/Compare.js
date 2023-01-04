@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import './Compare.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
-import { faFileExcel } from '@fortawesome/free-solid-svg-icons'
+import DownloadButton from './DownloadButton'
 import * as XLSX from 'xlsx'
 
 const Compare = () => {
@@ -17,7 +17,7 @@ const Compare = () => {
 
     useEffect(() => {
         const fetchFunds = async () => {
-            const res = await fetch(`http://localhost:8000/compare/${id}/${date1}/${date2}`)
+            const res = await fetch(`http://${process.env.REACT_APP_PORT}/compare/${id}/${date1}/${date2}`)
             const data = await res.json()
             setCompareData(data)
 
@@ -49,6 +49,7 @@ const Compare = () => {
     }
 
     const exportFunds = () => {
+        console.log('EXPORTAR')
         const fundsToExcel = [...fundsList]
         fundsToExcel.unshift(compareData.table[2])
         fundsToExcel.unshift(compareData.table[1])
@@ -70,10 +71,7 @@ const Compare = () => {
                         <h2 className='fund-subtitle'>Fechas: {compareData.date}</h2>
                         <div>
                             <h2 className='fund-subtitle'>Precio: {compareData.price}</h2>
-                            <button onClick={exportFunds}>
-                                <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
-                                Descargar
-                            </button>
+                            <DownloadButton exportFunds={exportFunds}/>
                         </div>
                     </div>
                     <div className='compare-grid'>
