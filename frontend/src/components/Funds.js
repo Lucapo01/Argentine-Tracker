@@ -68,7 +68,7 @@ const Funds = () => {
                         <h2 className='fund-subtitle'>Fecha: {date}</h2>
                         <div>
                             <h2 className='fund-subtitle'>Precio: {fundsData.price}</h2>
-                            <button className='compare-btn' onClick={exportFunds}>
+                            <button onClick={exportFunds}>
                                 <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
                                 Descargar
                             </button>

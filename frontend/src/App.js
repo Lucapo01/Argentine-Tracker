@@ -60,11 +60,9 @@ function App() {
                         <Tickers selectTicker={selectTicker} selected={selectedId} tickersMenu={tickersMenu} toggleMenu={toggleMenu} />
                         <div className='container'>
                             <LineChart selectedId={selectedId} passDates={passDates} />
-                            <div className='compare-selector-container'>
-                                <div className='dates-container'>
-                                    <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />
-                                    <DatesMenu date={date2} dateId={2} setDates={setDates} dateList={dateList} />
-                                </div>
+                            <div className='dates-selector-container'>
+                                <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />
+                                <DatesMenu date={date2} dateId={2} setDates={setDates} dateList={dateList} />
                                 <button className={`compare-btn ${emptyDate && 'empty-date'} ${equalDates && 'equal-dates'}`} onClick={() => openCompare(date1, date2)}>Comparar</button>
                             </div>
                         </div>

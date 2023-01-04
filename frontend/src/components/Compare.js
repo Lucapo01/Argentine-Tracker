@@ -70,7 +70,7 @@ const Compare = () => {
                         <h2 className='fund-subtitle'>Fechas: {compareData.date}</h2>
                         <div>
                             <h2 className='fund-subtitle'>Precio: {compareData.price}</h2>
-                            <button className={'compare-btn'} onClick={exportFunds}>
+                            <button onClick={exportFunds}>
                                 <FontAwesomeIcon className='excel-icon' icon={faFileExcel} />
                                 Descargar
                             </button>

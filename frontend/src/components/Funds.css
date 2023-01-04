@@ -8,15 +8,22 @@
         align-content: center;
 }
 
+.funds-grid h4:nth-of-type(1), h4:nth-of-type(2) {
+        font-weight: 600;
+}
+
 .funds-grid h4:nth-of-type(4n+1), h4:nth-of-type(4n+2) {
-        background-color: rgb(202, 202, 202);
+        background-color: rgb(235, 235, 235);;
 }
 
 .fund {
         padding: .5rem;
         font-size: medium;
-        border: 1px solid #333333;
-        margin-bottom: 0 - 1px;
+        border-top: .5px solid #969696;
         font-size: 1.2rem;
         font-weight: normal;
+}
+
+.fund:nth-last-child(1),  .fund:nth-last-child(2){
+        border-bottom: .5px solid #969696;
 }
