@@ -8,6 +8,7 @@ import uvicorn
 from settings import ENGINE_PSWD
 from excel_handler import handler as ExcelHandler
 from fastapi.responses import FileResponse
+from datetime import datetime
 import sys
 
 app = FastAPI()
@@ -133,6 +134,23 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
             dif["table"].append([key, 0, resp2_funds_dict[key], resp2_funds_dict[key], 100])
     
     return dif
+
+@app.post("/support_ticket")
+async def support_ticket(msg: str):
+    with open("support.txt", "a") as f:
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        f.write(f"{now} - {msg}")
+
+@app.get("/support_ticket/{password}")
+async def support_ticket(password: str):
+    if password != ENGINE_PSWD:
+        return "Wrong password"
+    
+    with open("support.txt", "r") as f:
+        return f.read()
+
+
+
 
 
 @app.post("/engineUpdate/{password}/{today}")
