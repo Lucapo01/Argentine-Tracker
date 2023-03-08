@@ -28,7 +28,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 async def root():
     return {"message": "Hello World"}
 
@@ -43,7 +43,7 @@ async def root():
 #     return _services.create_ticker(db=db, ticker=ticker)
 
 
-@app.get("/tickers/")
+@app.get("/tickers/", tags=["Tickers"])
 def read_users(
     db: _orm.Session = Depends(_services.get_db),
 ):
@@ -54,7 +54,7 @@ def read_users(
     return response
 
 
-@app.get("/tickers/{ticker_id}", response_model=_schemas.Ticker)
+@app.get("/tickers/{ticker_id}", tags=["Tickers"], response_model=_schemas.Ticker)
 def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = _services.get_ticker(db=db, id=ticker_id)
     if db_ticker is None:
@@ -63,13 +63,13 @@ def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
         )
     return db_ticker
 
-@app.get("/excel/{ticker_id}", response_class=FileResponse)
+@app.get("/excel/{ticker_id}", tags=["Tickers"], response_class=FileResponse)
 def excel(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
     some_file_path = ExcelHandler.get_excel(db_ticker.name)
     return FileResponse(some_file_path, filename=f"{db_ticker.name}.xlsx")
 
-@app.get("/point/{ticker_id}/{date}", response_model=Dict)
+@app.get("/point/{ticker_id}/{date}", tags=["Tickers"], response_model=Dict)
 def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
     resp = {"date": date, "price": 0.0, "name": db_ticker.name, "funds": []}
@@ -96,7 +96,7 @@ def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db
 
     return resp
 
-@app.get("/compare/{ticker_id}/{date1}/{date2}", response_model=Dict)
+@app.get("/compare/{ticker_id}/{date1}/{date2}", tags=["Tickers"], response_model=Dict)
 def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_services.get_db)):
     resp1: dict = point(ticker_id=ticker_id, date=date1,db=db)
     resp2: dict = point(ticker_id=ticker_id, date=date2,db=db)
@@ -135,13 +135,13 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
     
     return dif
 
-@app.post("/support_ticket")
+@app.post("/support_ticket", tags=["Support"])
 async def support_ticket(msg: str):
     with open("support.txt", "a") as f:
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         f.write(f"{now} - {msg}")
 
-@app.get("/support_ticket/{password}")
+@app.get("/support_ticket/{password}", tags=["Support"])
 async def support_ticket(password: str):
     if password != ENGINE_PSWD:
         return "Wrong password"
@@ -149,11 +149,7 @@ async def support_ticket(password: str):
     with open("support.txt", "r") as f:
         return f.read()
 
-
-
-
-
-@app.post("/engineUpdate/{password}/{today}")
+@app.post("/engineUpdate/{password}/{today}", tags=["Engine"])
 async def update_engine(password: str,today: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
     try:
         if password == ENGINE_PSWD:
