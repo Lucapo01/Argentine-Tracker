@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown} from '@fortawesome/free-solid-svg-icons'
 import DownloadButton from './DownloadButton'
 import * as XLSX from 'xlsx'
+import NotFound from './NotFound'
 
 const Funds = () => {
     const { id } = useParams()
@@ -25,7 +26,7 @@ const Funds = () => {
             })
             setFundsList(fundsListFromServer)
         }
-
+        
         fetchFunds()
     }, [id, date])
 
@@ -61,7 +62,7 @@ const Funds = () => {
 
     return (
         <>
-            {Object.keys(fundsData).length > 0 &&
+            {Object.keys(fundsData).length > 0 ? 
                 <div className='funds-container'>
                     <div className='initial-data'>
                         <h2 className='fund-title'>{fundsData.name}</h2>
@@ -94,8 +95,8 @@ const Funds = () => {
                             ))
                         ))}
                     </div>
-                </div>
-            }
+                </div> 
+        : <NotFound/> }
         </>
     )
 }

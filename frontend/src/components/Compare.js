@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import DownloadButton from './DownloadButton'
 import * as XLSX from 'xlsx'
+import NotFound from './NotFound'
 
 const Compare = () => {
     const { id } = useParams()
@@ -64,7 +65,7 @@ const Compare = () => {
 
     return (
         <>
-            {Object.keys(compareData).length > 0 &&
+            {Object.keys(compareData).length > 0 ? 
                 <div className='funds-container'>
                     <div className='initial-data'>
                         <h2 className='fund-title'>{compareData.name}</h2>
@@ -122,6 +123,7 @@ const Compare = () => {
                         ))}
                     </div>
                 </div>
+                : <NotFound/>
             }
         </>
     )

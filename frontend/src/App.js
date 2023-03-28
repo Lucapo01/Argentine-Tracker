@@ -9,6 +9,8 @@ import Funds from './components/Funds';
 import DatesMenu from './components/DatesMenu';
 import Compare from './components/Compare';
 import Footer from './components/Footer';
+import Home from './components/Home';
+import NotFound from './components/NotFound';
 
 function App() {
     const [selectedId, setSelectedId] = useState('1')
@@ -60,7 +62,8 @@ function App() {
         <>
             <Header toggleMenu={toggleMenu} />
             <Routes>
-                <Route path='/' exact element={
+                <Route path='/' exact element={<Home />} />
+                <Route path='/graph' exact element={
                     <>
                         <Tickers selectTicker={selectTicker} selected={selectedId} tickersMenu={tickersMenu} toggleMenu={toggleMenu} />
                         {tickersMenu ? (
@@ -83,6 +86,7 @@ function App() {
                 } />
                 <Route path='/point/:id/:date' exact element={<Funds />} />
                 <Route path='/compare/:id/:date1/:date2' exact element={<Compare />} />
+                <Route path='/*' element={<NotFound />} />
             </Routes>
             <Footer />
         </>
