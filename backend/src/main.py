@@ -162,7 +162,7 @@ async def support_ticket(password: str, _ = Depends(login)):
         return f.read()
 
 @app.post("/engineUpdate/{password}/{today}", tags=["Engine"])
-async def update_engine(password: str,today: str, request: Request, db: _orm.Session = Depends(_services.get_db), _ = Depends(login)):
+async def update_engine(password: str,today: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
     try:
         if password == ENGINE_PSWD:
             payload = await request.json()
