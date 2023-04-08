@@ -7,7 +7,7 @@ import DownloadButton from './DownloadButton'
 import * as XLSX from 'xlsx'
 import NotFound from './NotFound'
 
-const Compare = () => {
+const Compare = ({ ikey }) => {
     const { id } = useParams()
     const { date1 } = useParams()
     const { date2 } = useParams()
@@ -18,7 +18,7 @@ const Compare = () => {
 
     useEffect(() => {
         const fetchFunds = async () => {
-            const res = await fetch(`http://${process.env.REACT_APP_PORT}/compare/${id}/${date1}/${date2}`)
+            const res = await fetch(`http://${process.env.REACT_APP_PORT}/compare/${id}/${date1}/${date2}?key=${ikey}`)
             const data = await res.json()
             setCompareData(data)
 
@@ -30,6 +30,7 @@ const Compare = () => {
         }
 
         fetchFunds()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, date1, date2])
 
     const sortByColumn = (column) => {

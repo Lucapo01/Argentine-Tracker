@@ -7,7 +7,7 @@ import DownloadButton from './DownloadButton'
 import * as XLSX from 'xlsx'
 import NotFound from './NotFound'
 
-const Funds = () => {
+const Funds = ({ ikey }) => {
     const { id } = useParams()
     const { date } = useParams()
     const [fundsData, setFundsData] = useState({})
@@ -17,17 +17,20 @@ const Funds = () => {
 
     useEffect(() => {
         const fetchFunds = async () => {
-            const res = await fetch(`http://${process.env.REACT_APP_PORT}/point/${id}/${date}`)
+            const res = await fetch(`http://${process.env.REACT_APP_PORT}/point/${id}/${date}?key=${ikey}`)
             const data = await res.json()
             setFundsData(data)
+            
             const fundsListFromServer = data.funds.slice(2)
             fundsListFromServer.sort((first, second) => {
                 return second[1] - first[1];
             })
             setFundsList(fundsListFromServer)
+           
         }
         
         fetchFunds()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, date])
 
     const sortByColumn = (column) => {
