@@ -10,7 +10,7 @@ const Verification = ({ changeKey }) => {
 
     const verificateKey = async (e) => {
         e.preventDefault()
-        const res = await fetch(`http://${process.env.REACT_APP_PORT}/login?key=${key}`, {
+        const res = await fetch(`http://${process.env.REACT_APP_PORT}/login?key=${key}&internal=false`, {
             method: "POST"})
         const data = await res.json()
 
