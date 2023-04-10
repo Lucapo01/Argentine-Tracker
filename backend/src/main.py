@@ -45,15 +45,24 @@ async def root():
 
 
 @app.post("/login", tags=["Login"])
-def login(key: str):
+def login(key: str, internal: bool = True):
+    passed = False
     with open("keys.json", "r") as f:
         keys = json.load(f)
         if key in keys:
-            return {"detail": "OK"}
+            if not internal:
+                keys[key]["used_times"] += 1
+            passed = True
+        
+    with open("keys.json", "w") as f:
+        json.dump(keys, f, indent=4)
     
-    raise HTTPException(
-        status_code=403, detail="Invalid Key."
-    )
+    if passed:
+        return {"detail": "OK"}
+    else:
+        raise HTTPException(
+            status_code=403, detail="Invalid Key."
+        )
 
 @app.get("/tickers/", tags=["Tickers"])
 def read_users(
