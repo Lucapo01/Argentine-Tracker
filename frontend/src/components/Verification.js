@@ -11,7 +11,8 @@ const Verification = ({ changeKey }) => {
     const verificateKey = async (e) => {
         e.preventDefault()
         const res = await fetch(`http://${process.env.REACT_APP_PORT}/login?key=${key}&internal=false`, {
-            method: "POST"})
+            method: "POST"
+        })
         const data = await res.json()
 
         if (data['detail'] !== 'Invalid Key.') {
@@ -23,7 +24,7 @@ const Verification = ({ changeKey }) => {
     }
 
     return (
-        <div className='verification-container' style={{ backgroundImage: `url(${verificationBg})`, backgroundPosition: 'center'}}>
+        <div className='verification-container' style={{ backgroundImage: `url(${verificationBg})`, backgroundPosition: 'center' }}>
             <div className='code-container'>
                 <form className='code-form' onSubmit={verificateKey}>
                     <label>
