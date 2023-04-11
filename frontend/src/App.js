@@ -64,7 +64,6 @@ function App() {
     }
     
     const changeKey = (newKey, newValidKey) => {
-        localStorage.clear()
         setKey(newKey)
         setValidKey(newValidKey)
         if (newValidKey) {
