@@ -1,3 +1,6 @@
+# excels
+backend/excel_handler/files/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

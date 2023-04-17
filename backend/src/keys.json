@@ -6,5 +6,9 @@
     "temp": {
         "type": "temp",
         "used_times": 15
+    },
+    "JPMorgan": {
+        "type": "temp",
+        "used_times": 0
     }
 }
