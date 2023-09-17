@@ -1,1 +1,4 @@
 ENGINE_PSWD = "g21jhv3223b1h"
+DATA_FORMAT = "%d_%m_%Y__%H_%M_%S"
+LOGIN_PSWD = "h12v42yg83b_"
+SESSION_TIME = 60*60*0.5 # 30 min

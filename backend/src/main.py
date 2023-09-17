@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 import core.schemas.schemas as _schemas
 import core.services.services as _services
 import sqlalchemy.orm as _orm
 from typing import Dict
 import uvicorn
-from settings import ENGINE_PSWD
+from settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, LOGIN_PSWD
 from excel_handler import handler as ExcelHandler
 from fastapi.responses import FileResponse
 from datetime import datetime
@@ -44,29 +44,34 @@ async def root():
 #     return _services.create_ticker(db=db, ticker=ticker)
 
 
-@app.post("/login", tags=["Login"])
-def login(key: str, internal: bool = True):
-    passed = False
-    with open("keys.json", "r") as f:
-        keys = json.load(f)
-        if key in keys:
-            if not internal:
-                keys[key]["used_times"] += 1
-            passed = True
-        
-    with open("keys.json", "w") as f:
-        json.dump(keys, f, indent=4)
-    
-    if passed:
-        return {"detail": "OK"}
-    else:
+@app.post("/login", tags=["Login"], status_code=status.HTTP_200_OK)
+def login(ip: str, pswd: str) -> str:
+    if pswd != LOGIN_PSWD:
         raise HTTPException(
-            status_code=403, detail="Invalid Key."
+            status_code=401, detail="Incorrect Password"
         )
+
+    with open("users.json", "r") as f:
+        users = json.load(f)
+
+    if ip in users.keys():
+        delta = datetime.now() - datetime.strptime(users[ip]["last_login"], DATA_FORMAT)
+        if delta.total_seconds() > SESSION_TIME:
+            users[ip]["count"] += 1
+        users[ip]["last_login"] = datetime.now().strftime(DATA_FORMAT)
+
+    else:
+        users[ip] = {"count": 1, "last_login": datetime.now().strftime(DATA_FORMAT)}
+
+    with open("users.json", "w") as f:
+        json.dump(users, f, indent=4)
+
+    return "OK"
+
 
 @app.get("/tickers/", tags=["Tickers"])
 def read_users(
-    db: _orm.Session = Depends(_services.get_db), _ = Depends(login)
+    db: _orm.Session = Depends(_services.get_db)
 ):
     tickers = _services.get_tickers(db=db)
     response = {}
@@ -76,7 +81,7 @@ def read_users(
 
 
 @app.get("/tickers/{ticker_id}", tags=["Tickers"], response_model=_schemas.Ticker)
-def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db), _ = Depends(login)):
+def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = _services.get_ticker(db=db, id=ticker_id)
     if db_ticker is None:
         raise HTTPException(
@@ -85,13 +90,13 @@ def tickers(ticker_id: int, db: _orm.Session = Depends(_services.get_db), _ = De
     return db_ticker
 
 @app.get("/excel/{ticker_id}", tags=["Tickers"], response_class=FileResponse)
-def excel(ticker_id: int, db: _orm.Session = Depends(_services.get_db), _ = Depends(login)):
+def excel(ticker_id: int, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
     some_file_path = ExcelHandler.get_excel(db_ticker.name)
     return FileResponse(some_file_path, filename=f"{db_ticker.name}.xlsx")
 
 @app.get("/point/{ticker_id}/{date}", tags=["Tickers"], response_model=Dict)
-def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db), _ = Depends(login)):
+def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db)):
     db_ticker = tickers(ticker_id=ticker_id, db=db)
     resp = {"date": date, "price": 0.0, "name": db_ticker.name, "funds": []}
 
@@ -118,7 +123,7 @@ def point(ticker_id: int, date: str, db: _orm.Session = Depends(_services.get_db
     return resp
 
 @app.get("/compare/{ticker_id}/{date1}/{date2}", tags=["Tickers"], response_model=Dict)
-def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_services.get_db), _ = Depends(login)):
+def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_services.get_db)):
     resp1: dict = point(ticker_id=ticker_id, date=date1,db=db)
     resp2: dict = point(ticker_id=ticker_id, date=date2,db=db)
 
@@ -168,13 +173,13 @@ def compare(ticker_id: int, date1: str, date2: str, db: _orm.Session = Depends(_
     return dif
 
 @app.post("/support_ticket", tags=["Support"])
-async def support_ticket(msg: str, _ = Depends(login)):
+async def support_ticket(msg: str):
     with open("support.txt", "a") as f:
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         f.write(f"{now} - {msg}")
 
 @app.get("/support_ticket/{password}", tags=["Support"])
-async def support_ticket(password: str, _ = Depends(login)):
+async def support_ticket(password: str):
     if password != ENGINE_PSWD:
         return "Wrong password"
     
