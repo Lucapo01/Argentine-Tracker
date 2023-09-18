@@ -5,7 +5,7 @@ import core.services.services as _services
 import sqlalchemy.orm as _orm
 from typing import Dict
 import uvicorn
-from settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, LOGIN_PSWD
+from settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, LOGIN_PSWD, IGNORE_TICKERS
 from excel_handler import handler as ExcelHandler
 from fastapi.responses import FileResponse
 from datetime import datetime
@@ -76,7 +76,8 @@ def read_users(
     tickers = _services.get_tickers(db=db)
     response = {}
     for ticker in tickers:
-        response[ticker.id] = ticker.name
+        if ticker.name not in IGNORE_TICKERS:
+            response[ticker.id] = ticker.name
     return response
 
 
