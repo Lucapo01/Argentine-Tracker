@@ -24,7 +24,7 @@ const LineChart = ({ selectedId, passDates }) => {
             setTicker(data)
             passDates(data.funds.total.dates)
         }
-
+        
         fetchTicker(selectedId)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedId])
