@@ -21,6 +21,16 @@ const LineChart = ({ selectedId, passDates }) => {
         const fetchTicker = async (id) => {
             const res = await fetch(`http://${process.env.REACT_APP_PORT}/tickers/${id}`)
             const data = await res.json()
+
+            if (data.funds.total.dates.length % 2 === 0 || data.funds.total.dates.length > 34) {
+                data.funds.total.dates.shift()
+                data.funds.total.prices.shift()
+                data.funds.total.qty.shift()
+                data.funds.avg.dates.shift()
+                data.funds.avg.prices.shift()
+                data.funds.avg.qty.shift()
+            }
+
             setTicker(data)
             passDates(data.funds.total.dates)
         }
