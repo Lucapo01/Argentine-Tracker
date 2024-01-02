@@ -9,7 +9,7 @@
         top: 3.5em;
         color: black;
         padding-top: 2rem;
-        padding-bottom: 3rem;
+        padding-bottom: 2rem;
 }
 
 .linechart-container {
@@ -17,6 +17,13 @@
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
+}
+
+.linechart-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
 }
 
 .dates-selector-container {
