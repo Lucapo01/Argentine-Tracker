@@ -89,8 +89,8 @@ const Graph = ({ changeTickerId }) => {
             <div className='container'>
                 <div className='linechart-container'>
                     <div className='linechart-tools'>
-                        <DownloadButton exportFunds={exportFunds} />
                         <PeriodMenu period={period} setPeriod={setPeriod_} periodList={periodList} />
+                        <DownloadButton exportFunds={exportFunds} />
                     </div>
                     <LineChart ticker={ticker} id={id}/>
                 </div>

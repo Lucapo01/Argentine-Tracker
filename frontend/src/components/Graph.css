@@ -4,12 +4,12 @@
         align-items: center;
         flex-wrap: wrap;
         width: 100%;
-        min-height: 94vh;
+        min-height: 85vh;
         position: relative;
-        top: 3.5em;
+        top: 4em;
         color: black;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+        padding-top: 0rem;
+        padding-bottom: 0rem;
 }
 
 .linechart-container {
