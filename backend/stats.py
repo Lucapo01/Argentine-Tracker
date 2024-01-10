@@ -21,7 +21,7 @@ for user in users.values():
     )
 
 dates_df = pd.DataFrame(connection_dates, columns=["date"])
-dates_df["date"] = pd.to_datetime(dates_df["date"])
+dates_df["date"] = pd.to_datetime(dates_df["date"]).dt.date
 dates_df['count'] = dates_df.groupby('date')['date'].transform('count')
 dates_df = dates_df.drop_duplicates(subset=['date', 'count'])
 
@@ -29,9 +29,8 @@ dates_df = dates_df.drop_duplicates(subset=['date', 'count'])
 dates_df.sort_values(by=["date"], inplace=True)
 # set date as index
 dates_df.set_index("date", inplace=True)
-print(dates_df)
-# show histogram
-# dates_df.hist()
+dates_df.plot(kind="bar", figsize=(15, 10))
+plt.show()
 
 # print(f"Users: {users_qty}")
 # print(f"First connection: {min(connection_dates)}")

@@ -1,15 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import core.schemas.schemas as _schemas
 import core.services.services as _services
 import sqlalchemy.orm as _orm
 from typing import Dict
-import uvicorn
 from settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, IGNORE_TICKERS, DATE_FORMAT
 from excel_handler import handler as ExcelHandler
 from fastapi.responses import FileResponse
 from datetime import datetime
-import sys
 import json
 from cachetools import TTLCache, cached
 import os
@@ -216,6 +215,16 @@ async def support_ticket(msg: str):
     with open("support.txt", "a") as f:
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         f.write(f"{now} - {msg}")
+
+@app.get("/users/{password}", tags=["Support"])
+async def users(password: str) -> JSONResponse:
+    if password != ENGINE_PSWD:
+        return JSONResponse(content={"error": "Wrong password"}, status_code=401)
+    
+    with open(users_file, "r") as f:
+        content = f.read()
+        # Assuming the content of the file is a JSON-formatted string, you can directly return it
+        return JSONResponse(content=content, status_code=200)
 
 @app.get("/support_ticket/{password}", tags=["Support"])
 async def support_ticket(password: str):
