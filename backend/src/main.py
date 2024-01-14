@@ -12,6 +12,7 @@ from datetime import datetime
 import json
 from cachetools import TTLCache, cached
 import os
+import uvicorn
 
 module_dir = os.path.dirname(__file__)  # get current directory
 users_file = os.path.join(module_dir, 'users.json')
@@ -91,7 +92,7 @@ def all_tickers(
 @app.get("/tickers/{ticker_id}", tags=["Tickers"], response_model=_schemas.Ticker)
 def tickers(
     ticker_id: int,
-    period: _schemas.PeriodBase = _schemas.PeriodBase.YEAR,
+    period: _schemas.PeriodBase = _schemas.PeriodBase.ALL,
     db: _orm.Session = Depends(_services.get_db),
     _ = Depends(login)
 ):
