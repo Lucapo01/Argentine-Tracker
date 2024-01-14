@@ -45,7 +45,9 @@ const Graph = ({ changeTickerId }) => {
             }
 
             setTicker(data)
-            setDateList(data.funds.total.dates)
+
+            const descendingDates = data.funds.total.dates.copy().reverse()
+            setDateList(descendingDates)
         }
         
         fetchTicker()
