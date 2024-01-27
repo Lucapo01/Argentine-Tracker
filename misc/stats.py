@@ -1,16 +1,17 @@
-import json
-import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
+import requests
+import json
 
 DATE_FORMAT = "%d-%m-%Y --- %H:%M:%S"
 
-module_dir = os.path.dirname(__file__)  # get current directory
-file_path = os.path.join(module_dir, 'users.json')
+r = requests.get("http://fcitracker.online:8000/users/g21jhv3223b1h")
+users = r.json()
+users = json.loads(users)
 
-with open(file_path) as f:
-    users = json.load(f)
+users.pop("lukpo.231", None)
+users.pop("lukpo121.231", None)
 
 users_qty = 0
 connection_dates = []
