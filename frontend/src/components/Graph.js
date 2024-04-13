@@ -32,7 +32,7 @@ const Graph = ({ changeTickerId }) => {
 
     useEffect(() => {
         const fetchTicker = async () => {
-            const res = await fetch(`http://${process.env.REACT_APP_PORT}/tickers/${id}?period=${backendPeriod}`)
+            const res = await fetch(`${process.env.REACT_APP_PORT}/tickers/${id}?period=${backendPeriod}`)
             const data = await res.json()
 
             if (data.funds.total.dates.length % 2 === 0 && data.funds.total.dates.length > 34) {
@@ -58,7 +58,7 @@ const Graph = ({ changeTickerId }) => {
     }, [id, backendPeriod])
 
     const exportFunds = () => {
-        window.open(`http://${process.env.REACT_APP_PORT}/excel/${id}`, '_blank', 'noopener,noreferrer')
+        window.open(`${process.env.REACT_APP_PORT}/excel/${id}`, '_blank', 'noopener,noreferrer')
     }
 
     const setPeriod_ = (period) => {

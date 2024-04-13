@@ -10,7 +10,7 @@ const Tickers = ({ openTicker, selected, tickersMenu, toggleMenu }) => {
 
     useEffect(() => {
         const fetchTickers = async () => {
-            const res = await fetch(`http://${process.env.REACT_APP_PORT}/tickers/`)
+            const res = await fetch(`${process.env.REACT_APP_PORT}/tickers/`)
             const data = await res.json()
 
             const tickersList = Object.values(data);

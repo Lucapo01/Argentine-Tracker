@@ -19,7 +19,7 @@ const Compare = ({ ikey }) => {
 
     useEffect(() => {
         const fetchFunds = async () => {
-            const res = await fetch(`http://${process.env.REACT_APP_PORT}/compare/${id}/${date1}/${date2}`)
+            const res = await fetch(`${process.env.REACT_APP_PORT}/compare/${id}/${date1}/${date2}`)
             const data = await res.json()
             setCompareData(data)
 
