@@ -22,12 +22,16 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://52.200.228.178:3000",
-    "http://fcitracker.online"
+    "http://fcitracker.online",
+    "https://localhost:3000",
+    "https://52.200.228.178:3000",
+    "https://fcitracker.online",
+    "http://18.235.24.52"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
