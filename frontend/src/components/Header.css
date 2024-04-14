@@ -7,6 +7,11 @@
         display: flex;
         align-items: center;
         z-index: 2;
+        transition: all 0.3s ease-in-out;
+}
+
+.light {
+        /* height: 4.5em; */
 }
 
 .title-container {

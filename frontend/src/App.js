@@ -23,7 +23,7 @@ function App() {
         setTickerId(id)
     }
 
-     const openTicker = (id) => {
+    const openTicker = (id) => {
         window.open(`/graph/${id}`, '_self', 'noopener,noreferrer')
     }
 
@@ -31,39 +31,48 @@ function App() {
         <>
             <Header toggleMenu={toggleMenu} />
             <Routes>
-                <Route path='/' exact element={<Home />} />
+                <Route path='/' exact element={<>
+                    <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu} />
+                    {tickersMenu ? (
+                        <div className="backdrop" onClick={toggleMenu} />
+                    ) : (
+                        <div className="backdrop" style={{ display: "none" }} />
+                    )}
+                    <Home />
+                </>
+                } />
                 <Route path='/graph/:id' exact element={
                     <>
-                            <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu}/>
-                            {tickersMenu ? (
-                                <div className="backdrop" onClick={toggleMenu} />
-                                ) : (
-                                    <div className="backdrop" style={{ display: "none" }} />
-                                    )}
-                            <Sponsor />
-                            <Graph changeTickerId={changeTickerId}/>
+                        <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu} />
+                        {tickersMenu ? (
+                            <div className="backdrop" onClick={toggleMenu} />
+                        ) : (
+                            <div className="backdrop" style={{ display: "none" }} />
+                        )}
+                        <Sponsor />
+                        <Graph changeTickerId={changeTickerId} />
                     </>
                 } />
                 <Route path='/point/:id/:date' exact element={
                     <>
-                        <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu}/>
+                        <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu} />
                         {tickersMenu ? (
                             <div className="backdrop" onClick={toggleMenu} />
-                            ) : (
-                                <div className="backdrop" style={{ display: "none" }} />
-                                )}
-                        <Funds/>
+                        ) : (
+                            <div className="backdrop" style={{ display: "none" }} />
+                        )}
+                        <Funds />
                     </>
                 } />
                 <Route path='/compare/:id/:date1/:date2' exact element={
                     <>
-                        <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu}/>
+                        <Tickers openTicker={openTicker} selected={tickerId} tickersMenu={tickersMenu} toggleMenu={toggleMenu} />
                         {tickersMenu ? (
                             <div className="backdrop" onClick={toggleMenu} />
-                            ) : (
-                                <div className="backdrop" style={{ display: "none" }} />
-                                )}
-                        <Compare/>
+                        ) : (
+                            <div className="backdrop" style={{ display: "none" }} />
+                        )}
+                        <Compare />
                     </>
                 } />
                 <Route path='/*' element={<NotFound />} />
