@@ -8,6 +8,7 @@
 }
 
 .welcome-container {
+        position: relative;
         background-color: #eef9ff;
         width: 100%;
         min-height: calc(100vh - 3.5em);
@@ -54,9 +55,22 @@
 }
 
 .welcome-img {
-        width: 50%;
+        width: 40%;
         min-width: 40rem;
         margin-right: 2rem;
+}
+
+.scroll-tutorial {
+        position: absolute;
+        justify-self: center;
+        align-self: flex-end;
+        width: 6rem;
+        font-size: 2.5rem;
+        color: #e9e9e9;
+        background-color: #adadad;
+        opacity: .6;
+        cursor: pointer;
+        bottom: 0;
 }
 
 .tutorial-block {
@@ -141,6 +155,10 @@
                 align-self: center;
                 width: 60%;
                 margin-bottom: 2rem;
+        }
+
+        .scroll-tutorial {
+                left: calc(50vw - 3rem)
         }
 }
 

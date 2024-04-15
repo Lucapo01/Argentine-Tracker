@@ -8,6 +8,8 @@ import pointImg from './images/point.PNG'
 import compareImg from './images/comparar.PNG'
 import categoryImg from './images/categorias.PNG'
 import donwloadImg from './images/descargar.PNG'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 const Home = () => {
         const [menuVisibleClass, setMenuVisibleClass] = useState('')
@@ -73,15 +75,25 @@ const Home = () => {
                 window.open(`/graph/1`, '_self', 'noopener,noreferrer')
         }
 
+        const scrollToTutorial = () => {
+                const menuTop = menuRef.current.getBoundingClientRect().top - 120;
+                window.scrollTo({
+                        top: menuTop,
+                        left: 0,
+                        behavior: "smooth",
+                      })
+        }
+
         return (
                 <div className='homepage-container'>
                         <div className='welcome-container'>
                                 <div className='welcome-text-container'>
                                         <h1 className='welcome-title'>Descubre que hicieron los grandes <p className='welcome-title-main-words'>Fondos de Inversión</p> con tu acción favorita</h1>
-                                        <h3 className='welcome-text'>En FCI Tracker va a poder visualizar el portafolio de los Fondos Comunes de Inversion de Argentina a lo largo del tiempo.</h3>
+                                        <h3 className='welcome-text'>En FCI Tracker va a poder visualizar el portafolio de los Fondos Comunes de Inversion de Argentina a lo largo del tiempo</h3>
                                         <button onClick={() => openGraph()}>Empezar</button>
                                 </div>
                                 <img className='welcome-img' src={welcomeImg} alt="" />
+                                <FontAwesomeIcon icon={faAngleDown} className='scroll-tutorial'  onClick={scrollToTutorial}/>
                         </div>
                         <div className='tutorial-block tutorial-block-odd'>
                                 <div className={`tutorial-text-img-container ${menuVisibleClass}`} ref={menuRef}>
@@ -95,7 +107,7 @@ const Home = () => {
                                 <div className={`tutorial-text-img-container ${graphVisibleClass}`} ref={graphRef}>
                                         <div className='tutorial-text-img'>
                                                 <img className='tutorial-img' src={graphImg} alt=""/>
-                                                <h2>Este es el gráfico del ticker elegido</h2>
+                                                <h2>Este es el gráfico de la evolución de tenencia por parte de los fondos en ese activo</h2>
                                         </div>
                                 </div>
                         </div>
