@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 /* eslint-disable no-unused-vars */
 import { Chart as ChartJS } from 'chart.js/auto'
@@ -6,6 +6,24 @@ import Loader from './Loader'
 import './LineChart.css'
 
 const LineChart = ({ ticker, id }) => {
+    const [fontSize, setFontSize] = useState(14);
+    const [pointRadius, setPointRadius] = useState(6);
+
+    useEffect(() => {
+        const responsiveFonts = () => {
+            if (window.innerWidth > 660) {
+                setFontSize(14)
+                setPointRadius(6)
+            }
+            if (window.innerWidth < 660) {
+                setFontSize(10)
+                setPointRadius(5)
+            }
+        }
+        console.log(window.innerWidth)
+        responsiveFonts()
+    })
+
     const openDetail = async (element) => {
         if (element.length > 0) {
             const date = ticker.funds.total.dates[element[0].index]
@@ -21,8 +39,8 @@ const LineChart = ({ ticker, id }) => {
             borderColor: 'rgba(0, 98, 255, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'rgba(0, 98, 255, 1)',
-            pointRadius: 7,
-            pointHoverRadius: 9,
+            pointRadius: pointRadius,
+            pointHoverRadius: pointRadius + 2,
             fill: false,
             tension: 0
         },
@@ -32,12 +50,19 @@ const LineChart = ({ ticker, id }) => {
             borderColor: 'rgba(0, 174, 232, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'rgba(0, 174, 232, 1)',
-            pointRadius: 7,
-            pointHoverRadius: 9,
+            pointRadius: pointRadius,
+            pointHoverRadius: pointRadius + 2,
             fill: false,
             tension: 0,
             hidden: true
         }]
+    }
+
+    const responsiveFonts = () => {
+        if (window.outerWidth < 660) {
+            setFontSize(1)
+            setPointRadius(5)
+        }
     }
 
     return (
@@ -52,7 +77,7 @@ const LineChart = ({ ticker, id }) => {
                                 ticks: {
                                     color: '#000000',
                                     font: {
-                                        size: 14,
+                                        size: fontSize,
                                         weight: 'bolder'
                                     },
                                     callback: function(value, index, values) {
@@ -72,7 +97,7 @@ const LineChart = ({ ticker, id }) => {
                                 ticks: {
                                     color: '#000000',
                                     font: {
-                                        size: 14,
+                                        size: fontSize,
                                         weight: 'bolder'
                                     }
                                 },

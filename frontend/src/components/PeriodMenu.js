@@ -11,7 +11,7 @@ const PeriodMenu = ({period, setPeriod, periodList}) => {
 
     return (
         <div className='period-menu-container'>
-            <h3>Periodo:</h3>
+            <h4>Periodo:</h4>
             <div className='period-menu'>
                 <div className='period-menu-trigger' onClick={() => togglePeriodsMenu()}>
                     <p>{period}</p>

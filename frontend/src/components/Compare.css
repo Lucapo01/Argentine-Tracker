@@ -21,14 +21,14 @@
 
 .fund-title {
         margin-bottom: .5rem;
-        font-size: xx-large;
+        font-size: x-large;
         font-weight: 600;
 }
 
 .fund-subtitle {
         margin-top: 1rem;
         margin-bottom: .7rem;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 400;
 }
 
@@ -61,9 +61,8 @@
 
 .compare-data {
         padding: .5rem;
-        font-size: medium;
         border-top: .5px solid #969696;
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: normal;
 }
 

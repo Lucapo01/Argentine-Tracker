@@ -2,7 +2,6 @@ import { React, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import Header from './components/Header'
-import Sponsor from './components/Sponsor'
 import Graph from './components/Graph'
 import Tickers from './components/Tickers';
 import Funds from './components/Funds';
@@ -49,7 +48,6 @@ function App() {
                         ) : (
                             <div className="backdrop" style={{ display: "none" }} />
                         )}
-                        <Sponsor />
                         <Graph changeTickerId={changeTickerId} />
                     </>
                 } />

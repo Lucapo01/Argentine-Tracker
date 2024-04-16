@@ -5,6 +5,7 @@ import LineChart from './LineChart';
 import PeriodMenu from './PeriodMenu';
 import DatesMenu from './DatesMenu';
 import Loader from './Loader'
+import Sponsor from './Sponsor'
 import './Graph.css'
 
 const Graph = ({ changeTickerId }) => {
@@ -14,7 +15,7 @@ const Graph = ({ changeTickerId }) => {
         "name": "",
         "funds": {
             "total": {},
-            "avg" : {}
+            "avg": {}
         },
         "price": 0,
         "type": ""
@@ -49,7 +50,7 @@ const Graph = ({ changeTickerId }) => {
             const descendingDates = data.funds.total.dates.slice().reverse()
             setDateList(descendingDates)
         }
-        
+
         fetchTicker()
         changeTickerId(id)
         setLoading(false)
@@ -86,22 +87,26 @@ const Graph = ({ changeTickerId }) => {
 
     return (
         <>
-        {loading ? <Loader/>
-                : 
-            <div className='container'>
-                <div className='linechart-container'>
-                    <div className='linechart-tools'>
-                        <PeriodMenu period={period} setPeriod={setPeriod_} periodList={periodList} />
-                        <DownloadButton exportFunds={exportFunds} />
+            {loading ? <Loader />
+                :
+                <>
+                    <Sponsor/>
+                    <div className='container'>
+                        <div className='linechart-container'>
+                            <div className='linechart-tools'>
+                                <PeriodMenu period={period} setPeriod={setPeriod_} periodList={periodList} />
+                                <DownloadButton exportFunds={exportFunds} />
+                            </div>
+                            <LineChart ticker={ticker} id={id} />
+                        </div>
+                        <div className='dates-selector-container'>
+                            <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />
+                            <DatesMenu date={date2} dateId={2} setDates={setDates} dateList={dateList} />
+                            <button className={`compare-btn ${emptyDate && 'empty-date'} ${equalDates && 'equal-dates'}`} onClick={() => openCompare(date1, date2)}>Comparar</button>
+                        </div>
                     </div>
-                    <LineChart ticker={ticker} id={id}/>
-                </div>
-                <div className='dates-selector-container'>
-                    <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />
-                    <DatesMenu date={date2} dateId={2} setDates={setDates} dateList={dateList} />
-                    <button className={`compare-btn ${emptyDate && 'empty-date'} ${equalDates && 'equal-dates'}`} onClick={() => openCompare(date1, date2)}>Comparar</button>
-                </div>
-            </div> }
+                </>
+            }
         </>
     )
 }

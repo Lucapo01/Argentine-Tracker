@@ -10,10 +10,6 @@
         transition: all 0.3s ease-in-out;
 }
 
-.light {
-        /* height: 4.5em; */
-}
-
 .title-container {
         display: flex;
         justify-content: center;
@@ -56,4 +52,25 @@
         align-items: flex-end;
         height: 35%;
         margin-left: .4rem;
+}
+
+@media only screen and (max-width: 600px) {
+        .title-container {
+                margin-left: 1rem;
+        }
+
+        .icon {
+                width: 2rem;
+                margin-right: 1rem;
+        }
+        
+        .title {
+                font-size: 1.3rem;
+                font-weight: 400;
+        }
+
+        .bars {
+                font-size: 1.3rem;
+                margin-left: 1rem;
+        }
 }
