@@ -61,4 +61,9 @@ class Period(_pydantic.BaseModel):
 
     def delta(self) -> relativedelta:
         return PERIOD_MAP[self.period]
+    
+class HotColdItem(_pydantic.BaseModel):
+    id: int
+    name: str
+    delta: float
    
