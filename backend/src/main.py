@@ -224,7 +224,7 @@ def get_hots(
     limit: int = 5,
     _ = Depends(login)
 ) -> List[_schemas.HotColdItem]:
-    return hot_colds_metric.get_hots(db=db, limit=limit)
+    return hot_colds_metric.get_hots(db=db, limit=limit, ignore=IGNORE_TICKERS)
 
 @app.get("/colds", tags=["Metrics"])
 def get_colds(
@@ -232,7 +232,7 @@ def get_colds(
     limit: int = 5,
     _ = Depends(login)
 ) -> List[_schemas.HotColdItem]:
-    return hot_colds_metric.get_colds(db=db, limit=limit)
+    return hot_colds_metric.get_colds(db=db, limit=limit, ignore=IGNORE_TICKERS)
 
 @app.post("/support_ticket", tags=["Support"])
 async def support_ticket(msg: str):
