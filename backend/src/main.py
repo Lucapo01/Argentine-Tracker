@@ -1,8 +1,10 @@
+from typing import List
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import core.schemas.schemas as _schemas
 import core.services.services as _services
+import core.metrics.hots_and_colds as hot_colds_metric
 import sqlalchemy.orm as _orm
 from typing import Dict
 from settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, IGNORE_TICKERS, DATE_FORMAT
@@ -215,6 +217,22 @@ def compare(
         dif["table"].append([key, qty1, qty2, dif_qty, dif_per])
 
     return dif
+
+@app.get("/hots", tags=["Metrics"])
+def get_hots(
+    db: _orm.Session = Depends(_services.get_db),
+    limit: int = 5,
+    _ = Depends(login)
+) -> List[_schemas.HotColdItem]:
+    return hot_colds_metric.get_hots(db=db, limit=limit)
+
+@app.get("/colds", tags=["Metrics"])
+def get_colds(
+    db: _orm.Session = Depends(_services.get_db),
+    limit: int = 5,
+    _ = Depends(login)
+) -> List[_schemas.HotColdItem]:
+    return hot_colds_metric.get_colds(db=db, limit=limit)
 
 @app.post("/support_ticket", tags=["Support"])
 async def support_ticket(msg: str):
