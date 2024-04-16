@@ -1,5 +1,5 @@
 import pydantic as _pydantic
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from enum import Enum
 from dateutil.relativedelta import relativedelta
 
@@ -65,5 +65,5 @@ class Period(_pydantic.BaseModel):
 class HotColdItem(_pydantic.BaseModel):
     id: int
     name: str
-    delta: float = Field(ge=-1, le=1)
+    delta: float
    
