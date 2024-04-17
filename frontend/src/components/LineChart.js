@@ -67,7 +67,7 @@ const LineChart = ({ ticker, id }) => {
 
     return (
         <>
-            <div className='line-chart'>
+            <div className='linechart-container'>
                 <Line
                     data={data}
                     options={{

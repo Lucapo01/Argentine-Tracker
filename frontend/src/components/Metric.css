@@ -1,0 +1,25 @@
+.metric {
+    width: 100%;
+    min-width: 10rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.metric h4 {
+    margin-bottom: .5rem;
+}
+
+.metric-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .4rem;
+    border-top: .5px solid #969696;
+    font-size: .9rem;
+    font-weight: normal;
+}
+
+.metric-atributes {
+    font-weight: 600;
+}

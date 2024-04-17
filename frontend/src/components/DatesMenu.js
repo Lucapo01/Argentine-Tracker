@@ -11,7 +11,7 @@ const DatesMenu = ({date, dateId, setDates, dateList}) => {
 
     return (
         <div className='dates-menu-container'>
-            <h3>Fecha {dateId === 1 ? 'inicio' : 'final'}:</h3>
+            <h4>Fecha {dateId === 1 ? 'inicio' : 'final'}:</h4>
             <div className='dates-menu'>
                 <div className='menu-trigger' onClick={() => toggleDatesMenu()}>
                     <p>{date === '' ? 'Seleccionar fecha' : date}</p>

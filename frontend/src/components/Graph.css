@@ -4,15 +4,13 @@
         align-items: flex-start;
         flex-wrap: wrap;
         width: 100%;
-        min-height: calc(95vh - 3.5rem);
+        min-height: calc(100vh - 3.5rem);
         position: relative;
-        top: 4em;
+        top: 3.8em;
         color: black;
-        padding-top: 0rem;
-        padding-bottom: 0rem;
 }
 
-.linechart-container {
+.graph-container {
         margin-top: 1rem;
         width: 80%;
         display: flex;
@@ -21,22 +19,35 @@
         align-items: flex-start;
 }
 
-.linechart-tools {
+.graph-tools {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
         width: 100%;
 }
 
-.dates-selector-container {
+.graph-sidebar {
         min-width: 10rem;
-        align-self: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin-top: 3rem;
         margin-bottom: 4rem;
         margin-left: 1rem;
+}
+
+.graph-metrics-menu > div:nth-child(1) {
+        margin-bottom: 1.5rem;
+}
+
+.graph-metrics-menu > div:nth-child(2) {
+        margin-bottom: .5rem;
+}
+
+.graph-dates-menu {
+        min-width: 10rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
 }
 
 .compare-btn {
@@ -72,8 +83,31 @@
                 align-items: center;
         }
 
-        .linechart-container {
+        .graph-container {
                 width: 90%;
+        }
+
+        .graph-sidebar {
+                width: 80%;
+                flex-direction: row;
+                justify-content: flex-start;
+        }
+
+        .graph-metrics-menu {
+                width: 70%;
+                min-width: 24rem;
+                display: flex;
+                align-items: center;
+                margin-right: 4rem;
+        }
+
+        .graph-metrics-menu > div:nth-child(1) {
+                margin-right: 4rem;
+                margin-bottom: 0;
+        }
+        
+        .graph-metrics-menu > div:nth-child(2) {
+                margin-bottom: 0;
         }
 
         .compare-btn {
@@ -82,18 +116,47 @@
 }
 
 @media only screen and (max-width: 1000px) {
-        .linechart-container {
+        .graph-container {
                 width: 95%;
         }
 
-        .linechart-tools {
+        .graph-tools {
                 width: 100%;
         }
 }
 
+@media only screen and (max-width: 750px) {
+        .graph-sidebar {
+                width: 95%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+        }
+
+        .graph-metrics-menu {
+                width: 80%;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin-top: 1rem;
+                margin-right: 0;
+        }
+
+        .graph-metrics-menu > div:nth-child(1) {
+                margin-right: 0;
+                margin-bottom: 1rem;
+        }
+}
+
 @media only screen and (max-width: 600px) {
-        .linechart-tools {
+        .graph-tools {
                 align-self: center;
+                width: 90%;
+        }
+
+        .graph-sidebar {
                 width: 90%;
         }
 }

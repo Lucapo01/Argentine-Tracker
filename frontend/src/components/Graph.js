@@ -6,9 +6,12 @@ import PeriodMenu from './PeriodMenu';
 import DatesMenu from './DatesMenu';
 import Loader from './Loader'
 import Sponsor from './Sponsor'
+import Metric from './Metric'
 import './Graph.css'
 
 const Graph = ({ changeTickerId }) => {
+    const [hots, setHots] = useState([])
+    const [colds, setColds] = useState([])
     const { id } = useParams()
     const [ticker, setTicker] = useState({
         "id": 0,
@@ -51,8 +54,21 @@ const Graph = ({ changeTickerId }) => {
             setDateList(descendingDates)
         }
 
+        const fetchHotsAndColds = async () => {
+            const hotsRes = await fetch(`${process.env.REACT_APP_PORT}/hots`)
+            const hotsData = await hotsRes.json()
+
+            setHots(hotsData)
+
+            const coldsRes = await fetch(`${process.env.REACT_APP_PORT}/colds`)
+            const coldsData = await coldsRes.json()
+
+            setColds(coldsData)
+        }
+
         fetchTicker()
         changeTickerId(id)
+        fetchHotsAndColds()
         setLoading(false)
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,17 +108,23 @@ const Graph = ({ changeTickerId }) => {
                 <>
                     <Sponsor/>
                     <div className='container'>
-                        <div className='linechart-container'>
-                            <div className='linechart-tools'>
+                        <div className='graph-container'>
+                            <div className='graph-tools'>
                                 <PeriodMenu period={period} setPeriod={setPeriod_} periodList={periodList} />
                                 <DownloadButton exportFunds={exportFunds} />
                             </div>
                             <LineChart ticker={ticker} id={id} />
                         </div>
-                        <div className='dates-selector-container'>
-                            <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />
-                            <DatesMenu date={date2} dateId={2} setDates={setDates} dateList={dateList} />
-                            <button className={`compare-btn ${emptyDate && 'empty-date'} ${equalDates && 'equal-dates'}`} onClick={() => openCompare(date1, date2)}>Comparar</button>
+                        <div className='graph-sidebar'>
+                            <div className='graph-metrics-menu'>
+                                <Metric title={'Hots'} tickers={hots}/>
+                                <Metric title={'Colds'} tickers={colds}/>
+                            </div>
+                            <div className='graph-dates-menu'>
+                                <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />
+                                <DatesMenu date={date2} dateId={2} setDates={setDates} dateList={dateList} />
+                                <button className={`compare-btn ${emptyDate && 'empty-date'} ${equalDates && 'equal-dates'}`} onClick={() => openCompare(date1, date2)}>Comparar</button>
+                            </div>
                         </div>
                     </div>
                 </>
