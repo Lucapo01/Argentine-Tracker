@@ -30,7 +30,7 @@ const Metric = ({ title, tickers }) => {
                 <p>Delta %</p>
             </div>
             {tickers.map((ticker) => (
-                <div className='metric-row' onClick={() => openTicker(ticker.id)}>
+                <div key={ticker.id} className='metric-row' onClick={() => openTicker(ticker.id)}>
                     <p>{ticker.name}</p>
                     <p style={changeColor(ticker.delta)}>{roundPercentage(ticker.delta)}</p>
                 </div>

@@ -20,7 +20,6 @@ const LineChart = ({ ticker, id }) => {
                 setPointRadius(5)
             }
         }
-        console.log(window.innerWidth)
         responsiveFonts()
     })
 
