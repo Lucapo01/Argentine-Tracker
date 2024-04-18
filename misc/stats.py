@@ -6,7 +6,7 @@ import json
 
 DATE_FORMAT = "%d-%m-%Y --- %H:%M:%S"
 
-r = requests.get("http://fcitracker.online:8000/users/g21jhv3223b1h")
+r = requests.get("https://fcitracker.online:8000/users/g21jhv3223b1h")
 users = r.json()
 users = json.loads(users)
 
