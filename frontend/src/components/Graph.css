@@ -6,13 +6,14 @@
         width: 100%;
         min-height: calc(100vh - 3.5rem);
         position: relative;
-        top: 3.8em;
         color: black;
 }
 
 .graph-container {
+        position: relative;
+        top: calc(3.8em + 74px);
         margin-top: 1rem;
-        width: 80%;
+        width: 75%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -24,9 +25,14 @@
         justify-content: space-between;
         align-items: flex-end;
         width: 100%;
+        padding-right: 1rem;
+        padding-left: 1rem;
 }
 
 .graph-sidebar {
+        position: relative;
+        top: calc(3em + 37px);
+        width: 10%;
         min-width: 10rem;
         display: flex;
         flex-direction: column;
@@ -37,10 +43,20 @@
 
 .graph-metrics-menu > div:nth-child(1) {
         margin-bottom: 1.5rem;
+        /* border: 1px solid #ff4545; */
+}
+
+.graph-metrics-menu > div:nth-child(1) > h4 {
+        background-color: #ffa0a0;
 }
 
 .graph-metrics-menu > div:nth-child(2) {
         margin-bottom: .5rem;
+        /* border: 1px solid #45c4ff; */
+}
+
+.graph-metrics-menu > div:nth-child(2) > h4 {
+        background-color: #a1e1ff;
 }
 
 .graph-dates-menu {
@@ -52,6 +68,7 @@
 
 .compare-btn {
         margin-top: 1rem;
+        width: 100%;
 }
 
 .empty-date::before {
@@ -76,11 +93,12 @@
         width: 160%;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1300px) {
         .container {
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                margin-bottom: calc(3.8em + 74px);
         }
 
         .graph-container {
@@ -88,9 +106,12 @@
         }
 
         .graph-sidebar {
+                top: calc(3.8em + 74px);
                 width: 80%;
                 flex-direction: row;
                 justify-content: flex-start;
+                margin-top: 2rem;
+                /* background-color: aliceblue; */
         }
 
         .graph-metrics-menu {
@@ -108,10 +129,6 @@
         
         .graph-metrics-menu > div:nth-child(2) {
                 margin-bottom: 0;
-        }
-
-        .compare-btn {
-                align-self: center;
         }
 }
 
@@ -134,7 +151,7 @@
         }
 
         .graph-metrics-menu {
-                width: 80%;
+                width: 60%;
                 min-width: 0;
                 display: flex;
                 flex-direction: column;
@@ -146,7 +163,12 @@
 
         .graph-metrics-menu > div:nth-child(1) {
                 margin-right: 0;
-                margin-bottom: 1rem;
+                margin-bottom: 3rem;
+        }
+
+        .graph-metrics-menu > div:nth-child(2) {
+                margin-right: 0;
+                margin-bottom: 2rem;
         }
 }
 
@@ -154,6 +176,7 @@
         .graph-tools {
                 align-self: center;
                 width: 90%;
+                padding: 0;
         }
 
         .graph-sidebar {

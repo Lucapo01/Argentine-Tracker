@@ -7,7 +7,7 @@
 }
 
 .menu-trigger {
-        width: 10rem;
+        width: 100%;
         padding: .8rem;
         display: flex;
         justify-content: space-between;
@@ -29,6 +29,7 @@
 }
 
 .dates-menu-content {
+        width: 100%;
         position: absolute;
         max-height: 11.2rem;
         overflow-x: hidden;
@@ -36,9 +37,9 @@
 }
 
 .dates-menu-item {
-        width: 10rem;
+        width: 100%;
         padding: .8rem;
-        font-size: .9rem;
+        font-size: 1rem;
         background-color: #ffffff;
         border-top: 1px solid rgba(0, 0, 0, .1);
         cursor: pointer;
@@ -47,4 +48,16 @@
 
 .dates-menu-item:hover {
         background-color: #e2e2e2;
+}
+
+@media only screen and (max-width: 750px) {
+        .menu-trigger {
+                width: 12rem;
+                font-size: 1rem;
+        }
+
+        .dates-menu-item {
+                width: 12rem;
+                font-size: 1rem;
+        }
 }

@@ -3,10 +3,16 @@
     min-width: 10rem;
     display: flex;
     flex-direction: column;
+    /* border: .5px solid #ff6868; */
+    background-color: rgb(245, 245, 245);
 }
 
 .metric h4 {
-    margin-bottom: .5rem;
+    padding: .5rem;
+}
+
+.metric-atributes {
+    font-weight: 600;
 }
 
 .metric-row {
@@ -14,12 +20,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: .4rem;
+    padding: .5rem;
     border-top: .5px solid #969696;
-    font-size: .9rem;
+    font-size: 1rem;
     font-weight: normal;
 }
 
+.metric-row {
+    cursor: pointer;
+}
+
 .metric-atributes {
-    font-weight: 600;
+    cursor: default;
 }

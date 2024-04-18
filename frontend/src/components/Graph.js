@@ -117,8 +117,8 @@ const Graph = ({ changeTickerId }) => {
                         </div>
                         <div className='graph-sidebar'>
                             <div className='graph-metrics-menu'>
-                                <Metric title={'Hots'} tickers={hots}/>
-                                <Metric title={'Colds'} tickers={colds}/>
+                                <Metric title={'Hots 🔥'} tickers={hots}/>
+                                <Metric title={'Colds ❄️'} tickers={colds}/>
                             </div>
                             <div className='graph-dates-menu'>
                                 <DatesMenu date={date1} dateId={1} setDates={setDates} dateList={dateList} />

@@ -18,6 +18,10 @@ const Metric = ({ title, tickers }) => {
         return (percentage * 100).toFixed(2)
     }
 
+    const openTicker = (id) => {
+        window.open(`/graph/${id}`, '_self', 'noopener,noreferrer')
+    }
+
     return (
         <div className='metric'>
             <h4>{title}</h4>
@@ -26,7 +30,7 @@ const Metric = ({ title, tickers }) => {
                 <p>Delta %</p>
             </div>
             {tickers.map((ticker) => (
-                <div className='metric-row'>
+                <div className='metric-row' onClick={() => openTicker(ticker.id)}>
                     <p>{ticker.name}</p>
                     <p style={changeColor(ticker.delta)}>{roundPercentage(ticker.delta)}</p>
                 </div>
