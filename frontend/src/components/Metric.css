@@ -1,14 +1,18 @@
 .metric {
     width: 100%;
-    min-width: 10rem;
+    min-width: 11rem;
     display: flex;
     flex-direction: column;
-    /* border: .5px solid #ff6868; */
     background-color: rgb(245, 245, 245);
 }
 
 .metric h4 {
     padding: .5rem;
+}
+
+.metric h4::after {
+    content: "(última semana)";
+    font-size: .8rem;
 }
 
 .metric-atributes {

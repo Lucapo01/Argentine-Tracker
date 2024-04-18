@@ -33,7 +33,7 @@
         position: relative;
         top: calc(3em + 37px);
         width: 10%;
-        min-width: 10rem;
+        min-width: 11rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -43,7 +43,6 @@
 
 .graph-metrics-menu > div:nth-child(1) {
         margin-bottom: 1.5rem;
-        /* border: 1px solid #ff4545; */
 }
 
 .graph-metrics-menu > div:nth-child(1) > h4 {
@@ -52,7 +51,6 @@
 
 .graph-metrics-menu > div:nth-child(2) {
         margin-bottom: .5rem;
-        /* border: 1px solid #45c4ff; */
 }
 
 .graph-metrics-menu > div:nth-child(2) > h4 {
@@ -60,7 +58,7 @@
 }
 
 .graph-dates-menu {
-        min-width: 10rem;
+        min-width: 11rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
