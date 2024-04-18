@@ -79,3 +79,21 @@
 .rotated {
         transform: rotate(180deg);
 }
+
+@media only screen and (max-width: 450px) { 
+        .compare-data {
+                font-size: .9rem;
+        }
+}
+
+@media only screen and (max-width: 400px) { 
+        .compare-data {
+                font-size: .8rem;
+        }
+}
+
+@media only screen and (max-width: 375px) { 
+        .compare-data {
+                font-size: .7rem;
+        }
+}

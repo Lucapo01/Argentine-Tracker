@@ -222,12 +222,30 @@
         }
 
         .welcome-text-container button {
-                width: 80%;
+                width: 100%;
                 margin-bottom: 3rem;
         }
 
         .welcome-img {
                 min-width: 22rem;
                 margin-right: 0;
+        }
+}
+
+@media only screen and (max-width: 429px) {
+        .welcome-text-container {
+                min-width: 80%;
+        }
+
+        .welcome-title {
+                font-size: 2.1rem;
+        }
+
+        .welcome-text {
+                font-size: 1.1rem;
+        }
+
+        .welcome-img {
+                min-width: 20rem;
         }
 }
