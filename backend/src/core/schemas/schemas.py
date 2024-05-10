@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 # -------------------------------------------------------------------
 
 class Ticker(_pydantic.BaseModel):
-    id: int
+    id: int = None # It will be set by the database
     name: str
     funds: dict
     price: int
@@ -16,12 +16,6 @@ class Ticker(_pydantic.BaseModel):
     
     class Config:
         orm_mode = True
-
-class createTicker(_pydantic.BaseModel):
-    name: str
-    funds: dict
-    price: int
-    type: str
 
 class Fondo(_pydantic.BaseModel):
     id: int

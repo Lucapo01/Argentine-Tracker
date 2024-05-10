@@ -4,8 +4,8 @@ import sqlalchemy.orm as _orm
 from ..schemas.schemas import HotColdItem
 from ..services import services as db_services
 
-def get_hot_cold_items(db: _orm.Session, ignore: list = []) -> List[HotColdItem]:
-    tickers = db_services.get_tickers(db=db)
+async def get_hot_cold_items(db: _orm.Session, ignore: list = []) -> List[HotColdItem]:
+    tickers = await db_services.get_tickers(db=db)
     tickers = [ticker for ticker in tickers if ticker.name not in ignore]
     items = []
     for ticker in tickers:
@@ -22,13 +22,13 @@ def get_hot_cold_items(db: _orm.Session, ignore: list = []) -> List[HotColdItem]
             )
     return items
 
-def get_hots(db: _orm.Session, limit: int = 5, ignore: list = []) -> List[HotColdItem]:
-    items = get_hot_cold_items(db, ignore)
+async def get_hots(db: _orm.Session, limit: int = 5, ignore: list = []) -> List[HotColdItem]:
+    items = await get_hot_cold_items(db, ignore)
     sorted_items = sorted(items, key=lambda x: x.delta, reverse=True)
     return sorted_items[:limit]
 
-def get_colds(db: _orm.Session, limit: int = 5, ignore: list = []) -> List[HotColdItem]:
-    items = get_hot_cold_items(db, ignore)
+async def get_colds(db: _orm.Session, limit: int = 5, ignore: list = []) -> List[HotColdItem]:
+    items = await get_hot_cold_items(db, ignore)
     sorted_items = sorted(items, key=lambda x: x.delta)
     return sorted_items[:limit]
     

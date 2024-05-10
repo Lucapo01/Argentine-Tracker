@@ -16,6 +16,7 @@ from cachetools import TTLCache, cached
 import os
 import uvicorn
 import sys
+from core.database.mongo.tickers import UserDatabase
 
 module_dir = os.path.dirname(__file__)  # get current directory
 users_file = os.path.join(module_dir, 'users.json')
@@ -84,11 +85,11 @@ def root():
 
 
 @app.get("/tickers/", tags=["Tickers"])
-def all_tickers(
-    db: _orm.Session = Depends(_services.get_db),
+async def all_tickers(
+    db: UserDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
-    tickers = _services.get_tickers(db=db)
+    tickers = await _services.get_tickers(db=db)
     response = {}
     for ticker in tickers:
         if ticker.name not in IGNORE_TICKERS:
@@ -97,14 +98,14 @@ def all_tickers(
 
 
 @app.get("/tickers/{ticker_id}", tags=["Tickers"], response_model=_schemas.Ticker)
-def tickers(
+async def tickers(
     ticker_id: int,
     period: _schemas.PeriodBase = _schemas.PeriodBase.ALL,
-    db: _orm.Session = Depends(_services.get_db),
+    db: UserDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
     period = _schemas.Period(period=period)  # Convert to Period object
-    db_ticker = _services.get_ticker(db=db, id=ticker_id)
+    db_ticker = await _services.get_ticker(db=db, id=ticker_id)
     if db_ticker is None:
         raise HTTPException(
             status_code=404, detail="This Ticker does not exist."
@@ -121,23 +122,23 @@ def tickers(
     return db_ticker
 
 @app.get("/excel/{ticker_id}", tags=["Tickers"], response_class=FileResponse)
-def excel(
+async def excel(
     ticker_id: int,
-    db: _orm.Session = Depends(_services.get_db),
+    db: UserDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
-    db_ticker = tickers(ticker_id=ticker_id, db=db)
+    db_ticker = await tickers(ticker_id=ticker_id, db=db)
     some_file_path = ExcelHandler.get_excel(db_ticker.name)
     return FileResponse(some_file_path, filename=f"{db_ticker.name}.xlsx")
 
 @app.get("/point/{ticker_id}/{date}", tags=["Tickers"], response_model=Dict)
-def point(
+async def point(
     ticker_id: int,
     date: str,
-    db: _orm.Session = Depends(_services.get_db),
+    db: UserDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
-    db_ticker = tickers(ticker_id=ticker_id, db=db)
+    db_ticker = await tickers(ticker_id=ticker_id, db=db)
     resp = {"date": date, "price": 0.0, "name": db_ticker.name, "funds": []}
 
     # Add total and avg at the beginning of the table
@@ -163,15 +164,15 @@ def point(
     return resp
 
 @app.get("/compare/{ticker_id}/{date1}/{date2}", tags=["Tickers"], response_model=Dict)
-def compare(
+async def compare(
     ticker_id: int,
     date1: str,
     date2: str,
-    db: _orm.Session = Depends(_services.get_db),
+    db: UserDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
-    resp1: dict = point(ticker_id=ticker_id, date=date1,db=db)
-    resp2: dict = point(ticker_id=ticker_id, date=date2,db=db)
+    resp1: dict = await point(ticker_id=ticker_id, date=date1,db=db)
+    resp2: dict = await point(ticker_id=ticker_id, date=date2,db=db)
 
     dif = {
         "date":date1 + " - " + date2,
@@ -219,20 +220,20 @@ def compare(
     return dif
 
 @app.get("/hots", tags=["Metrics"])
-def get_hots(
-    db: _orm.Session = Depends(_services.get_db),
+async def get_hots(
+    db: UserDatabase = Depends(_services.get_db),
     limit: int = 5,
     _ = Depends(login)
 ) -> List[_schemas.HotColdItem]:
-    return hot_colds_metric.get_hots(db=db, limit=limit, ignore=IGNORE_TICKERS)
+    return await hot_colds_metric.get_hots(db=db, limit=limit, ignore=IGNORE_TICKERS)
 
 @app.get("/colds", tags=["Metrics"])
-def get_colds(
-    db: _orm.Session = Depends(_services.get_db),
+async def get_colds(
+    db: UserDatabase = Depends(_services.get_db),
     limit: int = 5,
     _ = Depends(login)
 ) -> List[_schemas.HotColdItem]:
-    return hot_colds_metric.get_colds(db=db, limit=limit, ignore=IGNORE_TICKERS)
+    return await hot_colds_metric.get_colds(db=db, limit=limit, ignore=IGNORE_TICKERS)
 
 @app.post("/support_ticket", tags=["Support"])
 async def support_ticket(msg: str):
@@ -259,13 +260,13 @@ async def support_ticket(password: str):
         return f.read()
 
 @app.post("/engineUpdate/{password}/{today}", tags=["Engine"])
-async def update_engine(password: str,today: str, request: Request, db: _orm.Session = Depends(_services.get_db)):
+async def update_engine(password: str,today: str, request: Request, db: UserDatabase = Depends(_services.get_db)):
     try:
         if password == ENGINE_PSWD:
             payload = await request.json()
             ExcelHandler.update_excel(payload, today)
             for t in payload.keys():
-                db_ticker = _services.get_ticker_by_name(db=db, name=t)
+                db_ticker = await _services.get_ticker_by_name(db=db, name=t)
                 if db_ticker:
                     new_fund: dict = db_ticker.funds
                     for f in payload[t].keys():
@@ -279,12 +280,12 @@ async def update_engine(password: str,today: str, request: Request, db: _orm.Ses
                                 new_fund[f]["prices"][-1] = payload[t][f]["price"]
                         else:
                             new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
-                    _services.update_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))                
+                    await _services.update_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))                
                 else:
                     new_fund: dict = {}
                     for f in payload[t].keys():
                         new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
-                    _services.create_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))
+                    await _services.create_ticker(db=db, ticker=_schemas.Ticker(name=t,funds=new_fund,price=0,type="basic"))
         else:
             return "Incorrect Password"
     except Exception as e:
@@ -295,10 +296,10 @@ async def update_engine(password: str,today: str, request: Request, db: _orm.Ses
             )    
 
 @app.post("/delete/{password}/{name}", tags=["Engine"])
-async def delete_ticker(password: str, name: str, db: _orm.Session = Depends(_services.get_db)):
+async def delete_ticker(password: str, name: str, db: UserDatabase = Depends(_services.get_db)):
     try:
         if password == ENGINE_PSWD:
-            _services.delete_ticker_by_name(db, name)
+            await _services.delete_ticker_by_name(db, name)
         else:
             return "Incorrect Password"
     except Exception as e:
@@ -310,34 +311,22 @@ async def delete_ticker(password: str, name: str, db: _orm.Session = Depends(_se
 # -------------------------------------------------------------------
 # PLAYGROUND
 # -------------------------------------------------------------------
-# @app.get("/test")
-# def test(db: _orm.Session = Depends(_services.get_db)):
-#     try:
-#         print("test")
-#         tickers = _services.get_tickers(db=db)
-#         print(type(tickers))
-#         for t in tickers:
-#             print(t.name)
-#             funds = t.funds
-#             print(type(funds))
-#             a = 0
-#             elements = 0
-#             for f in funds.keys():
-#                 if f not in ["total", "avg"]:
-#                     try:
-#                         a += funds[f]["qty"][1]
-#                         elements += 1
-#                     except:
-#                         print(f)
+@app.get("/test")
+async def test(db: UserDatabase = Depends(_services.get_db)):
+    tickers = await _services.get_tickers(db=db)
+    user_database = UserDatabase()
+    for ticker in tickers:
+        ticker = _schemas.Ticker(
+            id=ticker.id,
+            name=ticker.name,
+            funds=ticker.funds,
+            price=ticker.price,
+            type=ticker.type
+        )
+        await user_database.create(ticker)
 
-#             funds["avg"]["qty"][1] = round(a/elements,2)
-#             funds["total"]["qty"][1] = round(a,2)
-#             _services.update_ticker(db=db, ticker=_schemas.createTicker(name=t.name,funds=funds,price=0,type="basic"))
-#     except Exception as e:
-#         print("[ERROR] test: ",e)
-#         raise HTTPException(
-#                 status_code=500, detail="Internal Server Error"
-#             )
+    
+    
 # -------------------------------------------------------------------
 # RUN
 # -------------------------------------------------------------------
