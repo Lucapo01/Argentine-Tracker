@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from settings import MONGO_URI
+from ....settings import MONGO_URI
 
 DATABASE = "fcitracker-database"
 
@@ -14,18 +14,13 @@ class AlreadyExistsException(Exception):
         super().__init__(f"{item_name} already exists")
 
 class Database:
-    client = None
-    database = None
+    def __init__(self, collection):
+        self.client = AsyncIOMotorClient(MONGO_URI)
+        self.database = self.client[DATABASE]
+        self.collection = self.database[collection]
 
-    @classmethod
-    def connect(cls):
-        if cls.client is None:
-            cls.client = AsyncIOMotorClient(MONGO_URI)
-            cls.database = cls.client[DATABASE]
-
-    @classmethod
-    def close(cls):
-        if cls.client is not None:
-            cls.client.close()
-            cls.client = None
-            cls.database = None
+    def __del__(self):
+        if self.client is not None:
+            self.client.close()
+            self.client = None
+            self.database = None

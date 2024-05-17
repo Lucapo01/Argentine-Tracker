@@ -7,3 +7,4 @@ IGNORE_TICKERS = [
     "AL29D ", "AL30D ", "AL35D ", "AL38D ", "AL41D ", "GD29D ", "GD30D ", "GD35D ", "GD38D ", "GD41D "
     ]
 MONGO_URI = "mongodb+srv://lucigar01:4dRMIzQ3W7f26qFU@fcitrackercluster.hfnbd1z.mongodb.net/?retryWrites=true&w=majority&appName=FciTrackerCluster"
+S3_BUCKET_EXCELS = "https://fcitracker.s3.amazonaws.com/"

@@ -1,31 +1,43 @@
-import pydantic as _pydantic
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
+from typing import List
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from datetime import timezone
 
 # -------------------------------------------------------------------
 # DATABASE SCHEMAS
 # -------------------------------------------------------------------
 
-class Ticker(_pydantic.BaseModel):
+def utcnow():
+    return datetime.now(timezone.utc)
+
+class UserSession(BaseModel):
+    started_at: datetime = Field(default_factory=utcnow)
+
+class User(BaseModel):
+    ip: str
+    created_at: datetime = Field(default_factory=utcnow)
+    last_access: datetime = Field(default_factory=utcnow)
+    sessions: List[UserSession] = []
+
+    def new_session(self):
+        self.sessions.append(UserSession())
+        self.last_access = utcnow()
+
+class Ticker(BaseModel):
     id: int = None # It will be set by the database
     name: str
     funds: dict
     price: int
     type: str
-    
-    class Config:
-        orm_mode = True
 
-class Fondo(_pydantic.BaseModel):
+class Fondo(BaseModel):
     id: int
     name: str
     tickers: dict
     patrimony: int
     type: str
-
-    class Config:
-        orm_mode = True
 
 # -------------------------------------------------------------------
 # BASIC SCHEMAS
@@ -50,13 +62,13 @@ PERIOD_MAP = {
     PeriodBase.ALL: relativedelta(years=1000),
 }
 
-class Period(_pydantic.BaseModel):
+class Period(BaseModel):
     period: PeriodBase = PeriodBase.YEAR
 
     def delta(self) -> relativedelta:
         return PERIOD_MAP[self.period]
     
-class HotColdItem(_pydantic.BaseModel):
+class HotColdItem(BaseModel):
     id: int
     name: str
     delta: float

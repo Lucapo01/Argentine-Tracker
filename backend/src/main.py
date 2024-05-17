@@ -1,25 +1,19 @@
 from typing import List
-from fastapi import FastAPI, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-import core.schemas.schemas as _schemas
-import core.services.services as _services
-import core.metrics.hots_and_colds as hot_colds_metric
-import sqlalchemy.orm as _orm
+from fastapi.responses import RedirectResponse
+import src.core.schemas.schemas as _schemas
+import src.core.services.services as _services
+import src.core.metrics.hots_and_colds as hot_colds_metric
 from typing import Dict
-from settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, IGNORE_TICKERS, DATE_FORMAT
-from excel_handler import handler as ExcelHandler
-from fastapi.responses import FileResponse
+from src.settings import ENGINE_PSWD, DATA_FORMAT, SESSION_TIME, IGNORE_TICKERS, DATE_FORMAT, S3_BUCKET_EXCELS
 from datetime import datetime
-import json
-from cachetools import TTLCache, cached
-import os
-import uvicorn
+from aiocache import cached
 import sys
-from core.database.mongo.tickers import UserDatabase
+from src.core.database.mongo import Database, NotFoundException
+from src.core.database.mongo.tickers import TickersDatabase
+from src.core.database.mongo.users import UsersDatabase
 
-module_dir = os.path.dirname(__file__)  # get current directory
-users_file = os.path.join(module_dir, 'users.json')
 app = FastAPI()
 
 origins = [
@@ -39,44 +33,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def startup_event():
-    if not os.path.isfile(users_file):  # Check if the file exists
-        with open(users_file, "w") as f:
-            json.dump({}, f, indent=4)
-    else:  # Check if the file is empty
-        flag = False
-        with open(users_file, "r") as f:
-            if f.read() == "":
-                flag = True
-        if flag:
-            with open(users_file, "w") as f:
-                json.dump({}, f, indent=4)
                 
-
-@cached(cache=TTLCache(maxsize=1024, ttl=SESSION_TIME))
-def execute_login(ip: str) -> datetime:
-    with open(users_file, "r") as f:
-        users = json.load(f)
-    last_login = datetime.now().strftime(DATA_FORMAT)
-    print(f"[INFO] {ip} logged in at {last_login}. Session time: {SESSION_TIME}")
-
-    if ip in users.keys(): # If the user already exists
-        users[ip]["count"] += 1
-        users[ip]["last_login"] = last_login
-    else: # If the user does not exist
-        users[ip] = {"count": 1, "last_login": last_login}
-
-    with open(users_file, "w") as f:
-        json.dump(users, f, indent=4)
-    return last_login
+@cached(ttl=SESSION_TIME)
+async def execute_login(ip: str) -> datetime:
+    user_database = UsersDatabase()
+    try:
+        user = await user_database.get_by_ip(ip)
+    except NotFoundException:
+        user = _schemas.User(ip=ip)
+    user.new_session()
+    await user_database.upsert(user)
+    return datetime.now()
 
 
-def login(request: Request) -> None:
+async def login(request: Request) -> None:
     ip = request.client.host
-    execute_login(ip)
+    await execute_login(ip)
 
 
 @app.get("/", tags=["Root"])
@@ -86,7 +58,7 @@ def root():
 
 @app.get("/tickers/", tags=["Tickers"])
 async def all_tickers(
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
     tickers = await _services.get_tickers(db=db)
@@ -101,7 +73,7 @@ async def all_tickers(
 async def tickers(
     ticker_id: int,
     period: _schemas.PeriodBase = _schemas.PeriodBase.ALL,
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
     period = _schemas.Period(period=period)  # Convert to Period object
@@ -121,21 +93,21 @@ async def tickers(
                 break
     return db_ticker
 
-@app.get("/excel/{ticker_id}", tags=["Tickers"], response_class=FileResponse)
+@app.get("/excel/{ticker_id}", tags=["Tickers"], response_class=RedirectResponse)
 async def excel(
     ticker_id: int,
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
     db_ticker = await tickers(ticker_id=ticker_id, db=db)
-    some_file_path = ExcelHandler.get_excel(db_ticker.name)
-    return FileResponse(some_file_path, filename=f"{db_ticker.name}.xlsx")
+    file_path = f"{S3_BUCKET_EXCELS}{db_ticker.name.upper()}.xlsx"
+    return RedirectResponse(url=file_path)
 
 @app.get("/point/{ticker_id}/{date}", tags=["Tickers"], response_model=Dict)
 async def point(
     ticker_id: int,
     date: str,
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
     db_ticker = await tickers(ticker_id=ticker_id, db=db)
@@ -168,7 +140,7 @@ async def compare(
     ticker_id: int,
     date1: str,
     date2: str,
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     _ = Depends(login)
 ):
     resp1: dict = await point(ticker_id=ticker_id, date=date1,db=db)
@@ -221,7 +193,7 @@ async def compare(
 
 @app.get("/hots", tags=["Metrics"])
 async def get_hots(
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     limit: int = 5,
     _ = Depends(login)
 ) -> List[_schemas.HotColdItem]:
@@ -229,7 +201,7 @@ async def get_hots(
 
 @app.get("/colds", tags=["Metrics"])
 async def get_colds(
-    db: UserDatabase = Depends(_services.get_db),
+    db: TickersDatabase = Depends(_services.get_db),
     limit: int = 5,
     _ = Depends(login)
 ) -> List[_schemas.HotColdItem]:
@@ -242,14 +214,13 @@ async def support_ticket(msg: str):
         f.write(f"{now} - {msg}")
 
 @app.get("/users/{password}", tags=["Support"])
-async def users(password: str) -> JSONResponse:
+async def users(password: str) -> List[_schemas.User]:
     if password != ENGINE_PSWD:
-        return JSONResponse(content={"error": "Wrong password"}, status_code=401)
+        raise HTTPException(status_code=403, detail="Incorrect password")
     
-    with open(users_file, "r") as f:
-        content = f.read()
-        # Assuming the content of the file is a JSON-formatted string, you can directly return it
-        return JSONResponse(content=content, status_code=200)
+    user_database = UsersDatabase()
+    users = await user_database.get_all()
+    return users
 
 @app.get("/support_ticket/{password}", tags=["Support"])
 async def support_ticket(password: str):
@@ -259,44 +230,44 @@ async def support_ticket(password: str):
     with open("support.txt", "r") as f:
         return f.read()
 
-@app.post("/engineUpdate/{password}/{today}", tags=["Engine"])
-async def update_engine(password: str,today: str, request: Request, db: UserDatabase = Depends(_services.get_db)):
-    try:
-        if password == ENGINE_PSWD:
-            payload = await request.json()
-            ExcelHandler.update_excel(payload, today)
-            for t in payload.keys():
-                db_ticker = await _services.get_ticker_by_name(db=db, name=t)
-                if db_ticker:
-                    new_fund: dict = db_ticker.funds
-                    for f in payload[t].keys():
-                        if f in new_fund.keys():
-                            if today != new_fund[f]["dates"][-1]:
-                                new_fund[f]["dates"].append(today)
-                                new_fund[f]["qty"].append(payload[t][f]["qty"])
-                                new_fund[f]["prices"].append(payload[t][f]["price"])
-                            else:
-                                new_fund[f]["qty"][-1] = payload[t][f]["qty"]
-                                new_fund[f]["prices"][-1] = payload[t][f]["price"]
-                        else:
-                            new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
-                    await _services.update_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))                
-                else:
-                    new_fund: dict = {}
-                    for f in payload[t].keys():
-                        new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
-                    await _services.create_ticker(db=db, ticker=_schemas.Ticker(name=t,funds=new_fund,price=0,type="basic"))
-        else:
-            return "Incorrect Password"
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        print("[ERROR] engineUpdate: ",e)
-        raise HTTPException(
-                status_code=500, detail=f"Internal Server Error {exc_type} {exc_tb.tb_lineno} {e}"
-            )    
+# @app.post("/engineUpdate/{password}/{today}", tags=["Engine"])
+# async def update_engine(password: str,today: str, request: Request, db: TickersDatabase = Depends(_services.get_db)):
+#     try:
+#         if password == ENGINE_PSWD:
+#             payload = await request.json()
+#             ExcelHandler.update_excel(payload, today)
+#             for t in payload.keys():
+#                 db_ticker = await _services.get_ticker_by_name(db=db, name=t)
+#                 if db_ticker:
+#                     new_fund: dict = db_ticker.funds
+#                     for f in payload[t].keys():
+#                         if f in new_fund.keys():
+#                             if today != new_fund[f]["dates"][-1]:
+#                                 new_fund[f]["dates"].append(today)
+#                                 new_fund[f]["qty"].append(payload[t][f]["qty"])
+#                                 new_fund[f]["prices"].append(payload[t][f]["price"])
+#                             else:
+#                                 new_fund[f]["qty"][-1] = payload[t][f]["qty"]
+#                                 new_fund[f]["prices"][-1] = payload[t][f]["price"]
+#                         else:
+#                             new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
+#                     await _services.update_ticker(db=db, ticker=_schemas.createTicker(name=t,funds=new_fund,price=0,type="basic"))                
+#                 else:
+#                     new_fund: dict = {}
+#                     for f in payload[t].keys():
+#                         new_fund[f] = {"dates": [today], "qty": [payload[t][f]["qty"]], "prices": [payload[t][f]["price"]]}
+#                     await _services.create_ticker(db=db, ticker=_schemas.Ticker(name=t,funds=new_fund,price=0,type="basic"))
+#         else:
+#             return "Incorrect Password"
+#     except Exception as e:
+#         exc_type, exc_obj, exc_tb = sys.exc_info()
+#         print("[ERROR] engineUpdate: ",e)
+#         raise HTTPException(
+#                 status_code=500, detail=f"Internal Server Error {exc_type} {exc_tb.tb_lineno} {e}"
+#             )    
 
 @app.post("/delete/{password}/{name}", tags=["Engine"])
-async def delete_ticker(password: str, name: str, db: UserDatabase = Depends(_services.get_db)):
+async def delete_ticker(password: str, name: str, db: TickersDatabase = Depends(_services.get_db)):
     try:
         if password == ENGINE_PSWD:
             await _services.delete_ticker_by_name(db, name)
@@ -312,9 +283,9 @@ async def delete_ticker(password: str, name: str, db: UserDatabase = Depends(_se
 # PLAYGROUND
 # -------------------------------------------------------------------
 @app.get("/test")
-async def test(db: UserDatabase = Depends(_services.get_db)):
-    tickers = await _services.get_tickers(db=db)
-    user_database = UserDatabase()
+async def test(db: TickersDatabase = Depends(_services.get_old_db)):
+    tickers = _services.get_old_tickers(db=db)
+    tickers_database = TickersDatabase()
     for ticker in tickers:
         ticker = _schemas.Ticker(
             id=ticker.id,
@@ -323,7 +294,7 @@ async def test(db: UserDatabase = Depends(_services.get_db)):
             price=ticker.price,
             type=ticker.type
         )
-        await user_database.create(ticker)
+        await tickers_database.create(ticker)
 
     
     
@@ -331,5 +302,5 @@ async def test(db: UserDatabase = Depends(_services.get_db)):
 # RUN
 # -------------------------------------------------------------------
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, loop="asyncio")
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8000, loop="asyncio")
