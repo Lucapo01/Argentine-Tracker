@@ -21,9 +21,11 @@ class User(BaseModel):
     last_access: datetime = Field(default_factory=utcnow)
     sessions: List[UserSession] = []
 
-    def new_session(self):
-        self.sessions.append(UserSession())
-        self.last_access = utcnow()
+    def new_session(self, session_time_limit: int = 1):
+        current_time = utcnow().replace(tzinfo=None) # Remove timezone to make the comparison easier
+        if (current_time - self.last_access).total_seconds() > session_time_limit:
+            self.sessions.append(UserSession())
+            self.last_access = utcnow()
 
 class Ticker(BaseModel):
     id: int = None # It will be set by the database

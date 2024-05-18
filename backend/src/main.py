@@ -41,7 +41,7 @@ async def execute_login(ip: str) -> datetime:
         user = await user_database.get_by_ip(ip)
     except NotFoundException:
         user = _schemas.User(ip=ip)
-    user.new_session()
+    user.new_session(SESSION_TIME)
     await user_database.upsert(user)
     return datetime.now()
 
@@ -282,19 +282,19 @@ async def delete_ticker(password: str, name: str, db: TickersDatabase = Depends(
 # -------------------------------------------------------------------
 # PLAYGROUND
 # -------------------------------------------------------------------
-@app.get("/test")
-async def test(db: TickersDatabase = Depends(_services.get_old_db)):
-    tickers = _services.get_old_tickers(db=db)
-    tickers_database = TickersDatabase()
-    for ticker in tickers:
-        ticker = _schemas.Ticker(
-            id=ticker.id,
-            name=ticker.name,
-            funds=ticker.funds,
-            price=ticker.price,
-            type=ticker.type
-        )
-        await tickers_database.create(ticker)
+# @app.get("/test")
+# async def test(db: TickersDatabase = Depends(_services.get_old_db)):
+#     tickers = _services.get_old_tickers(db=db)
+#     tickers_database = TickersDatabase()
+#     for ticker in tickers:
+#         ticker = _schemas.Ticker(
+#             id=ticker.id,
+#             name=ticker.name,
+#             funds=ticker.funds,
+#             price=ticker.price,
+#             type=ticker.type
+#         )
+#         await tickers_database.create(ticker)
 
     
     
